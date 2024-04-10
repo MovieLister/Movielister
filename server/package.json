@@ -1,0 +1,37 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "compile": "tsc -p tsconfig.src.json",
+    "start": "node dist/index.js",
+    "watch": "rm -rf dist && tsc-watch --noClear -p tsconfig.src.json --onSuccess \"npm run start\"",
+    "generate": "drizzle-kit generate:pg",
+    "push": "drizzle-kit push:pg",
+    "studio": "drizzle-kit studio --port 5678"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "=2.4.3",
+    "dotenv": "=16.4.5",
+    "drizzle-orm": "=0.29.3",
+    "fastify": "=4.26.2",
+    "jsonwebtoken": "=9.0.2",
+    "pg": "=8.11.3",
+    "postgres": "=3.4.3"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.7",
+    "@types/pg": "^8.11.5",
+    "drizzle-kit": "^0.20.14",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "tsc-watch": "^6.2.0",
+    "typescript": "^5.4.5"
+  }
+}
