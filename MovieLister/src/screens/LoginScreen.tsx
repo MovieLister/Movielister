@@ -1,0 +1,43 @@
+import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import React from 'react'
+import Animated, { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
+
+export default function LoginScreen({navigation} : {navigation: any}) {
+    return (
+        <View className = "bg-white h-full w-full">
+            {/* <Animated.Image className = "h-full w-full absolute" source={require('../assets/images/background.webp')} /> */}
+            {/* PER ORA SENZA IMMAGINE DI BACKGROUND */}
+            {/* Title and form */}
+            <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">
+                
+                <View className = "flex items-center mx-4 space-y-4 pb-10">
+                    {/* Title */}
+                    <Animated.View entering={FadeInUp.duration(800).springify()} exiting={FadeOutUp.duration(800)} className = "flex items-center mb-5">
+                        <Text className = "text-5xl font-bold text-sky-500 tracking-wider">
+                            Login
+                        </Text>
+                    </Animated.View>
+                    
+                    {/* Form */}
+                    <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} exiting={FadeOutDown.delay(100).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
+                        <TextInput placeholder='Email' placeholderTextColor={'gray'} />
+                    </Animated.View>
+                    <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} exiting={FadeOutDown.delay(200).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
+                        <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry />
+                    </Animated.View>
+                    <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} exiting={FadeOutDown.delay(300).duration(800)} className = "w-full">
+                        <TouchableOpacity className = "bg-sky-400 p-3 rounded-2xl mb-2">
+                            <Text className = "text-white text-center font-bold text-xl">Login</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                    <Animated.View entering={FadeInDown.delay(400).duration(800).springify()} exiting={FadeOutDown.delay(400).duration(800)} className = "flex-row items-center mb-5">
+                        <Text className = "text-black">Don't have an account?</Text>
+                        <TouchableOpacity onPress={() => navigation.push('Signup')}>
+                            <Text className = "text-sky-500"> Sign up</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                </View>
+            </Animated.View>
+        </View >
+    )
+}
