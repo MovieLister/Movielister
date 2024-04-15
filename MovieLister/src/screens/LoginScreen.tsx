@@ -5,19 +5,20 @@ import Animated, { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from 'react-na
 export default function LoginScreen({navigation} : {navigation: any}) {
     return (
         <View className = "bg-white h-full w-full">
-            {/* <Animated.Image className = "h-full w-full absolute" source={require('../assets/images/background.webp')} /> */}
-            {/* PER ORA SENZA IMMAGINE DI BACKGROUND */}
+            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/mobile_background.jpg')} />
+            
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">
                 
-                <View className = "flex items-center mx-4 space-y-4 pb-10">
+                <View className = "flex items-center mx-4 space-y-4 pb-12">
                     {/* Title */}
                     <Animated.View entering={FadeInUp.duration(800).springify()} exiting={FadeOutUp.duration(800)} className = "flex items-center mb-5">
                         <Text className = "text-5xl font-bold text-sky-500 tracking-wider">
                             Login
                         </Text>
                     </Animated.View>
-                    
+                </View>
+                <View className = "flex items-center mx-4 space-y-4 pb-7">
                     {/* Form */}
                     <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} exiting={FadeOutDown.delay(100).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
                         <TextInput placeholder='Email' placeholderTextColor={'gray'} />
@@ -26,7 +27,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
                         <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry />
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} exiting={FadeOutDown.delay(300).duration(800)} className = "w-full">
-                        <TouchableOpacity className = "bg-sky-400 p-3 rounded-2xl mb-2">
+                        <TouchableOpacity className = "bg-sky-400 p-3 rounded-2xl mb-2"  onPress={() => navigation.push('HomePage')}>
                             <Text className = "text-white text-center font-bold text-xl">Login</Text>
                         </TouchableOpacity>
                     </Animated.View>
