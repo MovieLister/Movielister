@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1712768425641,
-      "tag": "0000_empty_matthew_murdock",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1712770241310,
-      "tag": "0001_stormy_firestar",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1712770276734,
-      "tag": "0002_aspiring_paibok",
+      "when": 1713180108984,
+      "tag": "0000_old_stark_industries",
       "breakpoints": true
     }
   ]

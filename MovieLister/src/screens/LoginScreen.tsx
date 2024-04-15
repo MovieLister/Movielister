@@ -1,11 +1,33 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StatusBar } from 'react-native'
 import React from 'react'
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 export default function LoginScreen({navigation} : {navigation: any}) {
+    const [formData, setFormData] = React.useState({
+        email: '',
+        password: ''
+    })
+
+    const [errorViewHidden, setErrorViewHidden] = React.useState("hidden")
+    const [errorText, setErrorText] = React.useState('')
+
+    const handleLogin = async () => {
+        console.log(formData)
+        axios.post("http://192.168.31.9:3000/auth/login", formData).then((result: AxiosResponse) => {
+            console.log(result.status)
+            navigation.push('HomePage')
+        })
+        .catch((error: AxiosError) => {
+            setErrorText(error.response?.data.message)
+            setErrorViewHidden("")
+        })
+    }
+
     return (
         <View className = "bg-white h-full w-full">
-            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/mobile_background.jpg')} />
+            <StatusBar hidden />
+            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/background.jpg')} />
             
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">
@@ -21,13 +43,27 @@ export default function LoginScreen({navigation} : {navigation: any}) {
                 <View className = "flex items-center mx-4 space-y-4 pb-7">
                     {/* Form */}
                     <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} exiting={FadeOutDown.delay(100).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
-                        <TextInput placeholder='Email' placeholderTextColor={'gray'} />
+                        <TextInput
+                            placeholder='Email'
+                            placeholderTextColor={'gray'}
+                            value={formData.email}
+                            onChangeText={(text) => {setFormData({...formData, email: text})}}
+                        />
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} exiting={FadeOutDown.delay(200).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
-                        <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry />
+                        <TextInput
+                            placeholder='Password'
+                            placeholderTextColor={'gray'}
+                            secureTextEntry
+                            value={formData.password}
+                            onChangeText={(text) => {setFormData({...formData, password: text})}}
+                        />
                     </Animated.View>
+                    <View className = {"flex-row items-center m-1 " + errorViewHidden} >
+                        <Text className = "text-red-500">{errorText}</Text>
+                    </View>
                     <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} exiting={FadeOutDown.delay(300).duration(800)} className = "w-full">
-                        <TouchableOpacity className = "bg-sky-400 p-3 rounded-2xl mb-2"  onPress={() => navigation.push('HomePage')}>
+                        <TouchableOpacity className = "bg-sky-400 p-3 rounded-2xl mb-2"  onPress={() => handleLogin()}>
                             <Text className = "text-white text-center font-bold text-xl">Login</Text>
                         </TouchableOpacity>
                     </Animated.View>

@@ -18,12 +18,12 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false, animation: 'none'}}>
-      <Stack.Screen name="Login" component={loginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="HomePage" component={HomePage} />
-    </Stack.Navigator>
-  </NavigationContainer>
+      <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false, animation: 'none'}}>
+        <Stack.Screen name="Login" component={loginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="HomePage" component={HomePage} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

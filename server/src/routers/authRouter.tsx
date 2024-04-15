@@ -16,7 +16,7 @@ const router: FastifyPluginCallback = async (server, _, done) => {
   
   server.post("/login", async(req : FastifyRequest <{Body: {email: string, password: string}}>, res) => {
     try{
-      await db
+      const user = await db
         .select()
         .from(users)
         .where(
@@ -26,19 +26,24 @@ const router: FastifyPluginCallback = async (server, _, done) => {
           )
         )
       
-      return res.status(200).send({message: "Logged in"})
+      if(user.length === 0){
+        return res.status(400).send({message: "Invalid credentials"})
+      }
     }
     catch (error){
       console.log(error)
+      return res.status(400).send({message: "Error communicating with the database"})
     }
+    return res.status(200).send({message: "Logged in"})
+
   })
 
-  server.post("/register", async(req : FastifyRequest <{Body: {name: string, email: string, password: string, confirmPassword: string}}>, res) => {
+  server.post("/register", async(req : FastifyRequest <{Body: {username: string, email: string, password: string, confirmPassword: string}}>, res) => {
     console.log(req.body)
     try{
       const user = await db.select().from(users).where(eq(users.email, req.body.email))
       if(user.length === 0){
-        await db.insert(users).values({ username: req.body.name, email: req.body.email, password: req.body.password })
+        await db.insert(users).values({ username: req.body.username, email: req.body.email, password: req.body.password })
       }
       else{
         return res.status(400).send({message: "This email is already used"})

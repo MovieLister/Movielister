@@ -4,9 +4,8 @@ import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutUp } from 'reac
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 export default function SignupScreen({navigation} : {navigation: any}) {
-
     const [formData, setFormData] = React.useState({
-        name: '',
+        username: '',
         email: '',
         password: '',
         confirmPassword: ''
@@ -23,14 +22,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
         }
         axios.post("http://192.168.31.9:3000/auth/register", formData).then((result: AxiosResponse) => {
             console.log(result.status)
-            if(result.status === 200){
-                navigation.push('HomePage')
-            }
-            if(result.status === 400){
-                console.log("errore dentro try")
-                setErrorText(result.data.message)
-                setErrorViewHidden("")
-            }
+            navigation.push('HomePage')
         })
         .catch((error: AxiosError) => {
             setErrorText(error.response?.data.message)
@@ -40,7 +32,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
 
     return (
         <View className = "bg-white h-full w-full">
-            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/mobile_background.jpg')} />
+            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/background.jpg')} />
             {/* Background image da cambiare */}
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">
@@ -59,8 +51,8 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                         <TextInput
                             placeholder='Name'
                             placeholderTextColor={'gray'}
-                            value={formData.name}
-                            onChangeText={(text) => setFormData({...formData, name: text})}
+                            value={formData.username}
+                            onChangeText={(text) => setFormData({...formData, username: text})}
                             
                         />
                     </Animated.View>
