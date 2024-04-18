@@ -20,7 +20,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
             setErrorViewHidden("")
             return
         }
-        axios.post("http://192.168.31.9:3000/auth/register", formData).then((result: AxiosResponse) => {
+        axios.post("http://192.168.1.98:3000/auth/register", formData).then((result: AxiosResponse) => {
             console.log(result.status)
             navigation.push('HomePage')
         })
@@ -32,7 +32,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
 
     return (
         <View className = "bg-white h-full w-full">
-            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/background.jpg')} />
+            <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background.jpg')} />
             {/* Background image da cambiare */}
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">

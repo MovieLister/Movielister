@@ -1,18 +1,11 @@
 import React from "react"
-import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from "react-native"
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import loginScreen from './src/screens/LoginScreen'
-import SignupScreen from './src/screens/SignupScreen'
-import HomePage from './src/screens/HomePage'
+import loginScreen from './src/screens/auth/LoginScreen'
+import SignupScreen from './src/screens/auth/SignupScreen'
+import HomePage from './src/screens/HomePage/HomePage'
 
 const Stack = createNativeStackNavigator();
-
 
 function App(): React.JSX.Element {
 

@@ -14,7 +14,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
 
     const handleLogin = async () => {
         console.log(formData)
-        axios.post("http://192.168.31.9:3000/auth/login", formData).then((result: AxiosResponse) => {
+        axios.post(`http://192.168.1.98:3000/auth/login`, formData).then((result: AxiosResponse) => {
             console.log(result.status)
             navigation.push('HomePage')
         })
@@ -27,7 +27,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
     return (
         <View className = "bg-white h-full w-full">
             <StatusBar hidden />
-            <Animated.Image className = "h-full w-full absolute" source={require('../../assets/background.jpg')} />
+            <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background.jpg')} />
             
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">

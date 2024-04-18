@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile": "tsc -p tsconfig.src.json",
+    "build": "tsc -p tsconfig.src.json",
     "start": "node dist/index.js",
     "watch": "rm -rf dist && tsc-watch --noClear -p tsconfig.src.json --onSuccess \"npm run start\"",
     "makemigrations": "drizzle-kit generate:pg",
