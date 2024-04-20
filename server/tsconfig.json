@@ -2,6 +2,7 @@
   "compilerOptions": {
     "lib": ["es2020", "dom"],
     "allowJs": true,
+    "jsx": "react-native",
     "module": "commonjs",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -17,7 +18,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "src",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "dist/src/db"
   ],
   "compileOnSave": true
