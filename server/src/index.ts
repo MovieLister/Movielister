@@ -3,6 +3,7 @@ import Fastify from "fastify"
 import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts"
 import type { User } from "./db/schema"
 import authRouter from "./routers/authRouter"
+import usersRouter from "./routers/usersRouter"
 
 void (async () => {
   const server = Fastify({
@@ -21,6 +22,7 @@ void (async () => {
   })
 
   server.register(authRouter, { prefix: "/auth" })
+  server.register(usersRouter, { prefix: "/users" })
 
   server.listen({ port: process.env.API_PORT ? Number(process.env.API_PORT) : 3000, host: '0.0.0.0' }).catch((err) => {
     console.error(err)

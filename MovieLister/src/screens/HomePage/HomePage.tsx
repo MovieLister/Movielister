@@ -77,7 +77,7 @@ export default function HomePage({navigation} : {navigation: any}){
                 {
                     headerShown: false,
                     tabBarStyle: {
-                        height: 69,
+                        height: 60,
                         position: "absolute",
                         bottom: 16,
                         right: 16,

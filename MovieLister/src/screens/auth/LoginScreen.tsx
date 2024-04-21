@@ -14,7 +14,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
 
     const handleLogin = async () => {
         console.log(formData)
-        axios.post(`http://192.168.1.98:3000/auth/login`, formData).then((result: AxiosResponse) => {
+        axios.post(`http://192.168.1.26:3000/auth/login`, formData).then((result: AxiosResponse) => {
             console.log(result.status)
             navigation.push('HomePage')
         })
