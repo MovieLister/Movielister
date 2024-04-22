@@ -14,7 +14,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
 
     const handleLogin = async () => {
         console.log(formData)
-        axios.post(`http://192.168.1.26:3000/auth/login`, formData).then((result: AxiosResponse) => {
+        axios.post(`http://192.168.116.8:3000/auth/login`, formData).then((result: AxiosResponse) => {
             console.log(result.status)
             navigation.push('HomePage')
         })
@@ -30,19 +30,19 @@ export default function LoginScreen({navigation} : {navigation: any}) {
             <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background.jpg')} />
             
             {/* Title and form */}
-            <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">
+            <Animated.View className = "h-full w-full flex justify-around pb-10">
                 
-                <View className = "flex items-center mx-4 space-y-4 pb-12">
+                <View className = "flex items-center h-2/5">
                     {/* Title */}
-                    <Animated.View entering={FadeInUp.duration(800).springify()} exiting={FadeOutUp.duration(800)} className = "flex items-center mb-5">
+                    <Animated.View entering={FadeInUp.duration(800).springify()} exiting={FadeOutUp.duration(800)} className = "flex items-center mt-40">
                         <Text className = "text-5xl font-bold text-sky-500 tracking-wider">
                             Login
                         </Text>
                     </Animated.View>
                 </View>
-                <View className = "flex items-center mx-4 space-y-4 pb-7">
+                <View className = " h-3/5 flex items-center mx-4 space-y-4 pb-7">
                     {/* Form */}
-                    <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} exiting={FadeOutDown.delay(100).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
+                    <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} className = "bg-black/5 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Email'
                             placeholderTextColor={'gray'}
@@ -50,7 +50,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
                             onChangeText={(text) => {setFormData({...formData, email: text})}}
                         />
                     </Animated.View>
-                    <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} exiting={FadeOutDown.delay(200).duration(800)} className = "bg-black/5 p-5 rounded-2xl w-full">
+                    <Animated.View entering={FadeInDown.delay(200).duration(800).springify()}  className = "bg-black/5 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Password'
                             placeholderTextColor={'gray'}

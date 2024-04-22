@@ -20,7 +20,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
             setErrorViewHidden("")
             return
         }
-        axios.post("http://192.168.1.26:3000/auth/register", formData).then((result: AxiosResponse) => {
+        axios.post("http://192.168.116.8:3000/auth/register", formData).then((result: AxiosResponse) => {
             console.log(result.status)
             navigation.push('HomePage')
         })
@@ -35,19 +35,19 @@ export default function SignupScreen({navigation} : {navigation: any}) {
             <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background.jpg')} />
             {/* Background image da cambiare */}
             {/* Title and form */}
-            <Animated.View className = "h-full w-full flex justify-around pt-40 pb-10">
+            <Animated.View className = "h-full w-full flex justify-around pb-10">
             
-                <View className = "flex items-center mx-4 space-y-4 pb-10">
+                <View className = "flex items-center h-2/6">
                     {/* Title */}
-                    <Animated.View entering={FadeInUp.duration(800).springify()} className = "flex items-center mb2">
+                    <Animated.View entering={FadeInUp.duration(800).springify()} className = " mt-32 flex items-center">
                         <Text className = "text-5xl font-bold text-sky-500 tracking-wider">
                             Sign up
                         </Text>
                     </Animated.View>
                 </View>
-                <View className = "flex items-center mx-4 space-y-4">
+                <View className = "h-4/6 flex items-center mx-4 space-y-4">
                     {/* Form */}
-                    <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} className = "bg-black/5 p-5 rounded-2xl w-full">
+                    <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} className = "bg-black/5 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Name'
                             placeholderTextColor={'gray'}
@@ -56,7 +56,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                             
                         />
                     </Animated.View>
-                    <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} className = "bg-black/5 p-5 rounded-2xl w-full">
+                    <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} className = "bg-black/5 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Email'
                             placeholderTextColor={'gray'}
@@ -64,7 +64,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                             onChangeText={(text) => setFormData({...formData, email: text})}
                         />
                     </Animated.View>
-                    <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} className = "p-5 rounded-2xl w-full bg-black/5 ">
+                    <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} className = "p-2 rounded-2xl w-full bg-black/5 ">
                         <TextInput
                             placeholder='Password'
                             placeholderTextColor={'gray'}
@@ -73,7 +73,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                             onChangeText={(text) => setFormData({...formData, password: text})}
                         />
                     </Animated.View>
-                    <Animated.View entering={FadeInDown.delay(400).duration(800).springify()} className = "p-5 rounded-2xl w-full bg-black/5 ">
+                    <Animated.View entering={FadeInDown.delay(400).duration(800).springify()} className = "p-2 rounded-2xl w-full bg-black/5 ">
                         <TextInput
                             placeholder='Confirm password'
                             placeholderTextColor={'gray'}

@@ -25,7 +25,7 @@ export default function Account() {
 
     function getProfile() {
         //TODO: Sostituire l'email con quella che verrà passata tramite sessione o jwt o quel che è 
-        axios.post("http://192.168.1.98:3000/users/getUser", {email: "a"}).then((result: AxiosResponse) => {
+        axios.post("http://192.168.116.8:3000/users/getUser", {email: "a"}).then((result: AxiosResponse) => {
             setUser(result.data.user)
             setFormData({email: "", username: "", password: ""})
         })
@@ -51,7 +51,7 @@ export default function Account() {
 
     function changeUserData() {
         //TODO: Sostituire l'email con quella che verrà passata tramite sessione o jwt o quel che è 
-        axios.post("http://192.168.1.98:3000/users/changeUsername", {email:"a", newUsername: formData.username, newPassword: formData.password, newEmail: formData.email}).then((result: AxiosResponse) => {
+        axios.post("http://192.168.116.8:3000/users/changeUsername", {email:"a", newUsername: formData.username, newPassword: formData.password, newEmail: formData.email}).then((result: AxiosResponse) => {
             console.log(result.data)
             setUser(result.data.user)
             setModalVisible(false)
@@ -75,10 +75,10 @@ export default function Account() {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View className = "w-full h-full flex justify-center items-center" style = {{backgroundColor : "rgba(0,0,0,0.8)"}} >
-                    <View className = "w-4/5 h-1/5 bg-neutral-800 rounded-2xl">
-                        <View className = "flex flex-row items-center">
+                    <View className = "w-4/5 h-1/4 bg-neutral-800 rounded-2xl">
+                        <View className = "flex flex-row items-center h-1/4">
                             <Text className = "text-black text-2xl mt-3 text-white ml-3 w-5/6">Change {fieldToChange}</Text>
-                            <View className = "flex justify-center items-center w-1/6 mr-2 mt-3">
+                            <View className = "flex justify-center w-1/6 mt-4 ml-1">
                                 <Icon
                                     name="times"
                                     size={20}
@@ -87,44 +87,65 @@ export default function Account() {
                                 />
                             </View>
                         </View>
-                        <Divider className = "w-full bg-neutral-200 mt-1"/>
-                        <TextInput
-                            placeholder={"New " + fieldToChange}
-                            className = "w-4/5 h-10 m-3 rounded-2xl bg-neutral-200"
-                            onChangeText={(text) => {updateFormData(fieldToChange!, text)}}
-                        />
-                        <Button
-                            buttonStyle = {
-                                {
-                                    backgroundColor: "orange",
-                                    borderRadius: 20,
-                                    width: 100,
-                                    alignSelf: "center"
+                        <View className = "flex justify-center items-center h-3/4">
+                            <Divider className = "w-full bg-neutral-200 mt-1"/>
+                            <TextInput
+                                placeholder={"New " + fieldToChange}
+                                placeholderTextColor={"gray"}
+                                className = "w-4/5 h-10 m-3 rounded-2xl bg-neutral-200 text-gray-700"
+                                onChangeText={(text) => {updateFormData(fieldToChange!, text)}}
+                                onSubmitEditing={() => changeUserData()}
+                            />
+                            <Button
+                                buttonStyle = {
+                                    {
+                                        backgroundColor: "orange",
+                                        borderRadius: 20,
+                                        width: 100,
+                                        alignSelf: "center"
+                                    }
                                 }
-                            }
-                            onPress={() => changeUserData()}
-                            title="Change"
-                        />
+                                onPress={() => changeUserData()}
+                                title="Change"
+                            />
+                        </View>
                     </View>
                 </View>
             </Modal>
 
-
-            <Text className="text-white text-2xl mt-2">Account</Text>
-            <View className = "items-center mt-10">
-                <Animated.Image className = " h-40 w-40 rounded-full" entering={ZoomIn.duration(300).springify()} source={require('../../../../assets/profile.jpg')} />
+            <View className = "flex flex-row items-center mt-5">
+                <View className = "w-1/6 pl-3 items-start ">
+                    <Icon
+                        name="arrow-left"
+                        color={"orange"}
+                        size={25}
+                    />
+                </View>
+                <View className = "w-4/6 items-center">
+                    <Text className="text-white text-2xl">Account</Text>
+                </View>
+                <View className = "w-1/6 items-end pr-3">
+                    <Icon
+                        name="sign-out"
+                        color={"white"}
+                        size={25}
+                    />
+                </View>
             </View>
-            <View className = "flex items-center mt-5">
+            <View className = "items-center mt-7 w-1/6">
+                <Animated.Image className = " h-32 w-32 rounded-full" entering={ZoomIn.duration(300).springify()} source={require('../../../../assets/profile.jpg')} />
+            </View>
+            <View className = "flex items-center mt-3">
                 <Text className = "text-white text-lg">{user?.username}</Text>
             </View>
-            <View className = "flex items-center mt-7 p-7 bg-neutral-600 rounded-2xl w-80">
+            <View className = "flex items-center mt-4 p-7 bg-neutral-600 rounded-2xl w-80">
                     {/* Form */}
-                    <Text className = "text-white w-full text-left font-bold mt-5 mb-2">Username</Text>
+                    <Text className = "text-white w-full text-left font-bold mb-2">Username</Text>
                     <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} exiting={FadeOutDown.delay(100).duration(800)} className = " flex flex-row bg-neutral-700 rounded-2xl w-full">
                         <TextInput
                             value= {user?.username}
                             editable={false}
-                            className = "w-4/5 my-3 ml-3 text-white"
+                            className = "w-4/5 my-1 ml-3 text-white"
                         />
                         <View className = " ml-1 flex justify-center items-center">
                             <Button
@@ -149,7 +170,7 @@ export default function Account() {
                         <TextInput
                             value= {user?.email}
                             editable={false}
-                            className = "w-4/5 my-3 ml-3 text-white"
+                            className = "w-4/5 my-1 ml-3 text-white"
                         />
                         <View className = " ml-1 flex justify-center items-center">
                             <Button
@@ -175,7 +196,7 @@ export default function Account() {
                             value={user?.password}
                             editable={false}
                             secureTextEntry
-                            className = "w-4/5 my-3 ml-3 text-white"
+                            className = "w-4/5 my-1 ml-3 text-white"
                         />
                          <View className = " ml-1 flex justify-center items-center">
                             <Button
@@ -199,17 +220,3 @@ export default function Account() {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    shadow: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 3,
-        },
-        shadowOpacity: 0.27,
-        shadowRadius: 4.65,
-
-        elevation: 6,
-    }
-})

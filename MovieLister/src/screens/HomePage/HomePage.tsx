@@ -68,8 +68,6 @@ const TabButton = (props: any) => {
     )
 }
 
-
-
 export default function HomePage({navigation} : {navigation: any}){
     return (
         <Tab.Navigator 
