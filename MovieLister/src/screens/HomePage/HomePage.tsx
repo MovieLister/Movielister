@@ -1,6 +1,6 @@
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity } from "react-native"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import React, { useEffect, Component } from "react"
+import React, { useEffect } from "react"
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Colors } from "react-native/Libraries/NewAppScreen"
 import * as Animatable from 'react-native-animatable'
@@ -60,7 +60,7 @@ const TabButton = (props: any) => {
                 <Icon
                     name={tab.activeIcon}
                     size={24}
-                    color={focused ? Colors.primary : null} //TODO: Da cambiare il colore dell'inattiva
+                    color={focused ? "orange" : null} //TODO: Da cambiare il colore dell'inattiva
                 />
             </Animatable.View>
            

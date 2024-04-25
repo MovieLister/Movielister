@@ -1,15 +1,12 @@
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useEffect } from "react";
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import * as streamingAvailability from "streaming-availability";
-import Animated, { FadeInLeft } from "react-native-reanimated";
-import AnimatedLoader from "react-native-animated-loader";
+import Animated, { FadeInLeft, FadeInUp } from "react-native-reanimated";
 import { Image } from "react-native-elements";
-import axios from "axios";
 
-type Media = streamingAvailability.Show & {trailer?: string, poster?: string}
-
+type Media = streamingAvailability.Show & {trailer?: string, poster?: string, score?: number}
 
 export default function Search() {
 
@@ -47,15 +44,15 @@ export default function Search() {
             };
         
             try {
-              const response = await axios.request(options);
-              const data = response.data;
-        
+              //const response = await axios.request(options);
+              //const data = response.data;
+
               setMedias((prevMedias) => [
                 ...prevMedias,
-                { ...filteredMedias[i], trailer: data.trailer ? data.trailer : "", poster: data.poster }
+                { ...filteredMedias[i], trailer: "", poster: "https://image.tmdb.org/t/p/original/s2xcqSFfT6F7ZXHxowjxfG0yisT.jpg", score: Math.floor(Math.random() * 5) + 1}
               ]);
         
-              await new Promise(resolve => setTimeout(resolve, 1200)); // Attesa di 1 secondo prima di procedere con la prossima iterazione a causa dell'api
+              //await new Promise(resolve => setTimeout(resolve, 1500)); // Attesa di 1 secondo prima di procedere con la prossima iterazione a causa dell'api
             } catch (error) {
               console.log("second request failed");
               console.error(error);
@@ -100,39 +97,48 @@ export default function Search() {
                     />
                 </View>
                 <TextInput
-                    className = "w-4/6 text-neutral-800"
+                    className = "w-5/6 text-neutral-800"
                     placeholder="Search for a movie"
                     placeholderTextColor={"gray"}
                     onChangeText={(text) => setTitle(text)}
                     onSubmitEditing={() => getMedias()}
                 />
-                <View className = "w-1/6 items-center">
-                    <Icon 
-                        name="filter"
-                        color = {Colors.dark}
-                        size={25}
-                    />
-                </View>
             </View>
-            <ScrollView className="mb-20 w-11/12">
-                <View className = "flex flex-col items-start w-full text-2xl justify-center">
+            <ScrollView className="mb-20 w-full ">
+                <View className = "flex flex-col items-start w-full text-2xl justify-center ">
                     {isLoading ? (
-                        <View className = "w-full flex items-center justify-center">
-                            <ActivityIndicator size="large" color="orange" />
-                        </View>
+                        <>
+                            <View className = "w-full flex items-center justify-center">
+                                <ActivityIndicator size="large" color="orange" />
+                            </View>
+                        </>
+                        
                     ) : (
-                        <View className = "w-full flex items-center justify-center">
+                        <View className = "w-full flex-row flex-wrap space-y-3 items-center justify-center ">
                             {medias.map((media, index) => {
                                 return (
-                                        <Animated.View key={index} className="bg-neutral-700 w-full rounded-xl m-1 flex flex-row" entering={FadeInLeft.delay(index * 100).duration(400).springify()}>
-                                            <View className="w-1/6 m-2">
-                                                <Image source={{uri: media.poster}} className = "w-full h-24 rounded-sm"/>
-                                            </View>
-                                            <View className="w-5/6">
-                                                <Text className="text-white text-xl w-72" numberOfLines={2} >{media.title}</Text>
-                                                <Text className="text-gray-400 text-sm w-72" numberOfLines={1}>{media.genres.map((genre) => genre.name).join(", ")}</Text>
-                                                <View className="items-end">
-                                                    
+                                        <Animated.View key={index} className="w-28 rounded-xl m-1 flex flex-col justify-between" entering={FadeInUp.delay(index * 100).duration(400).springify()}>
+                                            <TouchableOpacity onPress={() => console.log(media)}>
+                                                <View className="w-5/6 m-2">
+                                                    <Image source={{uri: media.poster}} className = "w-full h-36 rounded-xl"/>
+                                                </View>
+                                            </TouchableOpacity>   
+                                            <View className="w-28 flex flex-col items-center px-2 ">
+                                                <Text className="text-white text-xl w-full" numberOfLines={1} >{media.title}</Text>
+                                                <Text className="text-gray-400 text-sm w-full" numberOfLines={1} >{media.year}</Text>
+                                                <View className="flex flex-row w-full">
+                                                    {media.score ? (
+                                                        [...Array(5)].map((_, i) => {
+                                                        return (
+                                                            <Icon
+                                                                key={i}
+                                                                name={i < media.score ? "star" : "star-o"}
+                                                                size={13}
+                                                                color= "orange"
+                                                            />
+                                                        )
+                                                    })
+                                                    ) : null}
                                                 </View>
                                             </View>
                                         </Animated.View>
