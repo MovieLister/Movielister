@@ -5,6 +5,7 @@ import loginScreen from './src/screens/auth/LoginScreen'
 import SignupScreen from './src/screens/auth/SignupScreen'
 import HomePage from './src/screens/HomePage/HomePage'
 import { SafeAreaProvider } from "react-native-safe-area-context"
+import MovieDetail from "./src/screens/details/MovieDetail"
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ function App(): React.JSX.Element {
           <Stack.Screen name="Login" component={loginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="HomePage" component={HomePage} />
+          <Stack.Screen name="MovieDetail" component={MovieDetail} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

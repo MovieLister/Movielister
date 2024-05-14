@@ -6,9 +6,9 @@ import * as streamingAvailability from "streaming-availability";
 import Animated, { FadeInLeft, FadeInUp } from "react-native-reanimated";
 import { Image } from "react-native-elements";
 
-type Media = streamingAvailability.Show & {trailer?: string, poster?: string, score?: number}
+export type Media = streamingAvailability.Show & {trailer?: string, poster?: string, score?: number}
 
-export default function Search() {
+export default function Search({navigation} : {navigation: any}) {
 
     const [medias, setMedias] = React.useState<Media[]>([])
     const [title, setTitle] = React.useState("")
@@ -18,19 +18,18 @@ export default function Search() {
     const client = new streamingAvailability.DefaultApi(new streamingAvailability.Configuration({apiKey: RAPID_API_KEY}));
 
     const country = "it";
-    const showType = streamingAvailability.SearchByFiltersShowTypeEnum.Movie;
 
     async function getMedias(){
         setIsLoading(true);
         try {
-          const response = await client.searchByTitle({
+          const movies = await client.searchByTitle({
             title: title,
             country: country,
-            showType: showType
+            showType: streamingAvailability.SearchByFiltersShowTypeEnum.All
           });
         
           setMedias([]);
-          const filteredMedias = response.result.filter((media) => media.streamingInfo[country] != null);
+          const filteredMedias = movies.result.filter((media) => media.streamingInfo[country] != null);
         
           for (let i = 0; i < filteredMedias.length; i++){
             const options = {
@@ -58,6 +57,7 @@ export default function Search() {
               console.error(error);
             }
           }
+          
           setIsLoading(false);
         } catch (error) {
           console.log("first request failed");
@@ -118,14 +118,15 @@ export default function Search() {
                             {medias.map((media, index) => {
                                 return (
                                         <Animated.View key={index} className="w-28 rounded-xl m-1 flex flex-col justify-between" entering={FadeInUp.delay(index * 100).duration(400).springify()}>
-                                            <TouchableOpacity onPress={() => console.log(media)}>
+                                            <TouchableOpacity onPress={() => navigation.push("MovieDetail", {media: media})}>
                                                 <View className="w-5/6 m-2">
                                                     <Image source={{uri: media.poster}} className = "w-full h-36 rounded-xl"/>
                                                 </View>
                                             </TouchableOpacity>   
                                             <View className="w-28 flex flex-col items-center px-2 ">
                                                 <Text className="text-white text-xl w-full" numberOfLines={1} >{media.title}</Text>
-                                                <Text className="text-gray-400 text-sm w-full" numberOfLines={1} >{media.year}</Text>
+                                                <Text className="text-gray-400 text-sm w-full" numberOfLines={1} >
+                                                    {media.type == streamingAvailability.SearchByFiltersShowTypeEnum.Movie ? media.year : media.firstAirYear} - {media.type == "movie" ? "Movie" : "Serie"}</Text>
                                                 <View className="flex flex-row w-full">
                                                     {media.score ? (
                                                         [...Array(5)].map((_, i) => {
