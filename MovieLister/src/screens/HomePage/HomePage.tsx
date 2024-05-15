@@ -68,7 +68,7 @@ const TabButton = (props: any) => {
     )
 }
 
-export default function HomePage({navigation} : {navigation: any}){
+export default function HomePage(){
     return (
         <Tab.Navigator 
             screenOptions={

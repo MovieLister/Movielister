@@ -3,7 +3,7 @@ import React, { useEffect } from "react"
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Colors } from "react-native/Libraries/NewAppScreen"
 import * as streamingAvailability from "streaming-availability"
-import Animated, { FadeInLeft, FadeInUp } from "react-native-reanimated"
+import Animated, { FadeIn, FadeInLeft, FadeInUp, StretchInY, ZoomIn, ZoomInEasyDown } from "react-native-reanimated"
 import { Image } from "react-native-elements"
 import { Media } from "../HomePage/pages/Search"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -17,9 +17,12 @@ const {width, height} = Dimensions.get('window')
 export default function MovieDetail({route, navigation} : {route: any, navigation: any}) {
     const [isFavorite, setIsFavorite] = React.useState(false)
     const [media, setMedia] = React.useState<Media>()
+    const [trailerVisible, setTrailerVisible] = React.useState(false)
     useEffect(() => {
-        console.log(route.params.media)
         setMedia(route.params.media)
+        setTimeout(() => {
+            setTrailerVisible(true)
+        }, 2000)
     }, [])
 
     return (
@@ -35,20 +38,28 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                     </TouchableOpacity>
                 </SafeAreaView>
                 <View className="rounded-xl bg-neutral-900">
-                    <WebView
+                    <Animated.View entering={FadeIn.duration(800)} style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
+                        <WebView
                         source={{uri: route.params.media.trailer}}
-                        style={{width: width, aspectRatio: 16/9}}
+                        style={{width: width, aspectRatio: 16/9, }}
                         mediaPlaybackRequiresUserAction={false}
                         allowsInlineMediaPlayback={true}
                         javaScriptEnabled={true}
                         injectedJavaScript={`document.body.style.pointerEvents = 'none';`}
-                    />
+                        />
+                    </Animated.View>
+                    {!trailerVisible && (
+                        <Image source={{uri: media?.backdrop}} style={{width: width, aspectRatio: 16/9}}/>
+
+                    )}
+                    
                     <LinearGradient
                         colors={['transparent', 'rgba(23,23,23,0.2)', 'rgba(23,23,23,1)']}
                         start={{x: 0.5, y: 0}}
                         end={{x: 0.5, y: 1}}
                         style={{width: width, aspectRatio: 16/9}}
-                        className = "absolute bottom-0"/>
+                        className = "absolute bottom-0"
+                    />
                 </View>
             </View>
 
@@ -58,15 +69,16 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                 <View className = "mx-1 flex flex-col" style={{width: width*0.6}}>
                     <Text className="text-gray-200 text-2xl font-bold tracking-wider" numberOfLines={3}>{media?.title}</Text>
                     <Text className="text-gray-400 text-lg">
-                        {media?.year} • 
+                        {media?.year}
+                        <Text className="text-gray-200 text-md"> • </Text>
                         <Text className="flex flex-row">
                             {media?.score ? (
                                 [...Array(5)].map((_, i) => {
                                 return (
                                     <Icon
                                         key={i}
-                                        name={i < media?.score ? "star" : "star-o"}
-                                        size={13}
+                                        name={i < media.score ? "star" : "star-o"}
+                                        size={15}
                                         color= "orange"
                                     />
                                 )
@@ -92,6 +104,9 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                 </View>
             </View>
             <Text className="text-gray-200 text-md m-2">{media?.overview}</Text>
+            <Text className="text-gray-200 text-md m-2">Cast: {media?.cast.map((actor, index) => {
+                return actor + (index < media.cast.length - 1 ? ", " : "")
+            })}</Text>
         </ScrollView>
     )
 }
