@@ -1,10 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import React, { useEffect } from "react";
-import { Text, View, StyleSheet, TextInput, Modal } from "react-native";
+import { Text, View, StyleSheet, TextInput, Modal, TouchableOpacity } from "react-native";
 import { Button, Divider } from "react-native-elements";
 import Animated, { FadeInDown, FadeOutDown, ZoomIn } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {User} from "../../../../../server/src/db/schema";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 enum FORMDATAFIELDS {
     EMAIL = "Email",
@@ -12,7 +13,7 @@ enum FORMDATAFIELDS {
     PASSWORD = "Password"
 }
 
-export default function Account() {
+export default function Account({navigation} : {navigation: any}) {
 
     const [user, setUser] = React.useState<User>()
     const [modalVisible, setModalVisible] = React.useState(false)
@@ -112,17 +113,16 @@ export default function Account() {
                     </View>
                 </View>
             </Modal>
-
-            <View className = "flex flex-row items-center mt-5">
-                <View className = "w-1/6 pl-3 items-start ">
+            <SafeAreaView className = "z-20 w-full flex-row items-center px-4 mt-3">
+                <TouchableOpacity className = " w-1/6  rounded-xl p-1" onPress={() => navigation.goBack()}>
                     <Icon
                         name="arrow-left"
                         color={"orange"}
                         size={25}
                     />
-                </View>
-                <View className = "w-4/6 items-center">
-                    <Text className="text-white text-2xl">Account</Text>
+                </TouchableOpacity>
+                <View className="w-4/6 items-center">
+                    <Text className="text-white font-bold text-2xl">Account</Text>
                 </View>
                 <View className = "w-1/6 items-end pr-3">
                     <Icon
@@ -131,7 +131,7 @@ export default function Account() {
                         size={25}
                     />
                 </View>
-            </View>
+            </SafeAreaView>
             <View className = "items-center mt-7 w-1/6">
                 <Animated.Image className = " h-32 w-32 rounded-full" entering={ZoomIn.duration(300).springify()} source={require('../../../../assets/profile.jpg')} />
             </View>

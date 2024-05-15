@@ -8,6 +8,9 @@ import { Image } from "react-native-elements"
 import { Media } from "../HomePage/pages/Search"
 import { SafeAreaView } from "react-native-safe-area-context"
 import LinearGradient from "react-native-linear-gradient"
+import YoutubeIframe from "react-native-youtube-iframe"
+import YoutubePlayer from "react-native-youtube-iframe"
+import WebView from "react-native-webview"
 
 const {width, height} = Dimensions.get('window')
 
@@ -15,6 +18,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
     const [isFavorite, setIsFavorite] = React.useState(false)
     const [media, setMedia] = React.useState<Media>()
     useEffect(() => {
+        console.log(route.params.media)
         setMedia(route.params.media)
     }, [])
 
@@ -22,44 +26,72 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
         <ScrollView className = "bg-neutral-900 flex pb-1">
             <View className = "w-full">
                 <SafeAreaView className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
-                    <TouchableOpacity className = "rounded-xl p-1 bg-orange-400 " onPress={() => navigation.goBack()}>
+                    <TouchableOpacity className = "rounded-xl p-1" onPress={() => navigation.goBack()}>
                         <Icon
                             name="arrow-left"
-                            color={"white"}
+                            color={"orange"}
                             size={25}
                         />
                     </TouchableOpacity>
-                    
                 </SafeAreaView>
-                <View>
-                    <Image
-                        source={{uri: route.params.media.poster}}
-                        style={{width: width, height: height*0.45}}
+                <View className="rounded-xl bg-neutral-900">
+                    <WebView
+                        source={{uri: route.params.media.trailer}}
+                        style={{width: width, aspectRatio: 16/9}}
+                        mediaPlaybackRequiresUserAction={false}
+                        allowsInlineMediaPlayback={true}
+                        javaScriptEnabled={true}
+                        injectedJavaScript={`document.body.style.pointerEvents = 'none';`}
                     />
                     <LinearGradient
-                        colors={['transparent', 'rgba(23,23,23,0.8)', 'rgba(23,23,23,1)']}
+                        colors={['transparent', 'rgba(23,23,23,0.2)', 'rgba(23,23,23,1)']}
                         start={{x: 0.5, y: 0}}
                         end={{x: 0.5, y: 1}}
-                        style={{width: width, height: height*0.40}}
+                        style={{width: width, aspectRatio: 16/9}}
                         className = "absolute bottom-0"/>
                 </View>
             </View>
 
             {/* Movie Info */}
-            <View style={{marginTop: -(height*0.1)}} className = "space-y-3 flex flex-row justify-between p-2">
-                <Image source={{uri: media? media.poster : ""}} style={{width: width*0.3, height: height*0.2}} className = "rounded-xl"/>
-                <View className = "w-60  m-1 flex flex-col">
-                    <Text className="text-white text-3xl font-bold tracking-wider">{media?.title}</Text>
-                    <TouchableOpacity className="mt-3" onPress={() => setIsFavorite(!isFavorite)}>
+            <View style={{marginTop: -(height*0.01)}} className = "flex flex-row justify-between p-2">
+                <Image source={{uri: media?.poster}} style={{width: width*0.3, aspectRatio: 9/13}} className = " mx-2 rounded-xl"/>
+                <View className = "mx-1 flex flex-col" style={{width: width*0.6}}>
+                    <Text className="text-gray-200 text-2xl font-bold tracking-wider" numberOfLines={3}>{media?.title}</Text>
+                    <Text className="text-gray-400 text-lg">
+                        {media?.year} • 
+                        <Text className="flex flex-row">
+                            {media?.score ? (
+                                [...Array(5)].map((_, i) => {
+                                return (
+                                    <Icon
+                                        key={i}
+                                        name={i < media?.score ? "star" : "star-o"}
+                                        size={13}
+                                        color= "orange"
+                                    />
+                                )
+                            })
+                            ) : null}
+                        </Text>
+                        </Text>
+                    <Text className="text-gray-400 text-md">
+                        {
+                            media?.genres.map((genre, index) => {
+                                return genre.name + (index < media.genres.length - 1 ? " • " : "")
+                            })
+                        }
+                    </Text>
+                    <TouchableOpacity className="mt-3" style = {{width:25}}>
                         <Icon
                             name={isFavorite ? "bookmark" : "bookmark-o"}
                             color={isFavorite ? "orange" : "white"}
                             size={25}
+                            onPress={() => setIsFavorite(!isFavorite)}
                         />
                     </TouchableOpacity>
                 </View>
-                
             </View>
+            <Text className="text-gray-200 text-md m-2">{media?.overview}</Text>
         </ScrollView>
     )
 }
