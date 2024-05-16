@@ -17,10 +17,11 @@ const {width, height} = Dimensions.get('window')
 
 export default function MovieDetail({route, navigation} : {route: any, navigation: any}) {
     const [isFavorite, setIsFavorite] = React.useState(false)
-    const [media, setMedia] = React.useState<Media>()
+    const [media, setMedia] = React.useState<Media>(route.params.media)
     const [trailerVisible, setTrailerVisible] = React.useState(false)
-
+    const called = React.useRef(false)
     const setMovieTrailer = async (id: string) => {
+        console.log("called")
         const options = {
             method: 'GET',
             url: 'https://mdblist.p.rapidapi.com/',
@@ -32,52 +33,55 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
         };
         try {
             //const response = await axios.request(options);
-            //let trailerId = "";
-            //const data : {
-            //    trailer: string
-            //} = response.data;
-            //if(data.trailer){
-            //    data.trailer = data.trailer.replace("watch?v=", "embed/");
-            //    trailerId = data.trailer.split("embed/")[1];
-            //}
-            //route.params.media.trailer = data.trailer? (data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + trailerId + "&iv_load_policy=3&modestbranding=1") : undefined;
-            //if(data.trailer){
-            //    setTimeout(() => {
-            //        setTrailerVisible(true)
-            //        setTrailerVisible(false)
-            //    }, 0)
-            //    setTimeout(() => {
-            //        setTrailerVisible(true)
-            //    }, 2000)
-            //}
-            setTrailerVisible(false)
-            setMedia(route.params.media)
-
+            let trailerId = ""
+            const data : {
+                trailer: string
+            } = {trailer: "https://www.youtube.com/watch?v=LjkjJAtcKbA"}
+            if(data.trailer){
+                data.trailer = data.trailer.replace("watch?v=", "embed/")
+                trailerId = data.trailer.split("embed/")[1]
+            }
+            console.log("dataTrailer", data.trailer)
+            setMedia(prevMedia => ({
+                ...prevMedia,
+                trailer: !!data.trailer ? `${data.trailer}?controls=0&autoplay=1&loop=1&playlist=${trailerId}&iv_load_policy=3&modestbranding=1` : undefined
+            }))
+            if(data.trailer){
+            setTimeout(() => {
+                setTrailerVisible(true)
+            }, 2500)
+            }
+            
         } catch (error) {
             console.error(error);
         }
     }
 
-    const setActorImage = (actor: string) => {
+    const setActorImage = async (actor: string) => {
         try{
-            axios.get("https://api.tmdb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor).then((actors) => {
-                route.params.media.actors.push({name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"})
-
-            })
+            const actors = await axios.get("https://api.tmdb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor)
+            setMedia(prevMedia => ({
+                ...prevMedia,
+                actors: [...prevMedia.actors!, {name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"}]
+            }))
+            route.params.media.actors.push({name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"})
         } catch (error){
             console.log(error)
         }
-        setMedia(route.params.media)
-
     }
 
     useEffect(() => {
-        route.params.media.actors = []
+        if(called.current) return;
+        called.current = true;
+        setMovieTrailer(media.imdbId)
         route.params.media.cast.forEach(async (actor : string) => {
             setActorImage(actor)
         })
-        setMovieTrailer(route.params.media.imdbId)
     }, [])
+
+    useEffect(() => {
+        console.log("pisello", media.trailer)
+    }, [media.trailer])
 
     return (
         <View className = "bg-neutral-900 flex pb-1 min-h-full">
@@ -94,20 +98,22 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                 <View className = "w-full">
                     <View className="rounded-xl bg-neutral-900">
                         <Animated.View style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
+                        { 
+                            media.trailer && (
                             <WebView
-                            source={{uri: route.params.media.trailer}}
+                            source={{uri: media.trailer}}
                             style={{width: width, aspectRatio: 16/9, }}
                             mediaPlaybackRequiresUserAction={false}
                             allowsInlineMediaPlayback={true}
                             javaScriptEnabled={true}
                             injectedJavaScript={`document.body.style.pointerEvents = 'none';`}
                             />
+                        )}
+                            
                         </Animated.View>
                         {!trailerVisible && (
-                            <Image source={{uri: media?.backdrop}} style={{width: width, aspectRatio: 16/9}}/>
-
+                            <Image source={{uri: route.params.media.backdrop}} style={{width: width, aspectRatio: 16/9}}/>
                         )}
-                        
                         <LinearGradient
                             colors={['transparent', 'rgba(23,23,23,0.2)', 'rgba(23,23,23,1)']}
                             start={{x: 0.5, y: 0}}
@@ -167,7 +173,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                     </View>
                 </View>
                 <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg m-2">{media?.overview}</Text>
-                    
+                <Text className="text-gray-200 text-lg m-2">{media.trailer}</Text>
                 {/* Cast */}
                 <View className="flex flex-row justify-between p-2">
                     <Text className="text-gray-200 text-lg font-bold">Cast</Text>
@@ -176,7 +182,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                     {media?.actors?.map((actor, index) => {
                         return (
                             <TouchableOpacity key={index} className="flex flex-col items-center mx-2">
-                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
+                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-3xl"/>
                                 <Text className="text-gray-200 text-md">{actor.name}</Text>
                             </TouchableOpacity>
                         )
