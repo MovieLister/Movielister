@@ -46,102 +46,146 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
         setMedia(route.params.media)
     }
 
+    const setActorImage = async (actor: string) => {
+        try{
+            const actors = await axios.get("https://api.tmdb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor)
+            route.params.media.actors.push({name: actor, imagePath: "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path})
+        } catch (error){
+            console.log(error)
+        }
+        setMedia(route.params.media)
+    }
+
     useEffect(() => {
         setMovieTrailer(route.params.media.imdbId)
         setTimeout(() => {
             setTrailerVisible(true)
         }, 2000)
-        axios.get("https://api.themoviedb.org/3/person/31?api_key=ea43a2cafc528f04d5518b96b1ac4ad2").then((response) => {
-            console.log(response)
+        route.params.media.actors = []
+        route.params.media.cast.forEach(async (actor : string) => {
+            await setActorImage(actor)
         })
+        setMedia(route.params.media)
         
     }, [])
 
     return (
-        <ScrollView className = "bg-neutral-900 flex pb-1">
-            <View className = "w-full">
-                <SafeAreaView className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
-                    <TouchableOpacity className = "rounded-xl p-1" onPress={() => navigation.goBack()}>
-                        <Icon
-                            name="arrow-left"
-                            color={"orange"}
-                            size={25}
-                        />
-                    </TouchableOpacity>
-                </SafeAreaView>
-                <View className="rounded-xl bg-neutral-900">
-                    <Animated.View entering={FadeIn.duration(800)} style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
-                        <WebView
-                        source={{uri: route.params.media.trailer}}
-                        style={{width: width, aspectRatio: 16/9, }}
-                        mediaPlaybackRequiresUserAction={false}
-                        allowsInlineMediaPlayback={true}
-                        javaScriptEnabled={true}
-                        injectedJavaScript={`document.body.style.pointerEvents = 'none';`}
-                        />
-                    </Animated.View>
-                    {!trailerVisible && (
-                        <Image source={{uri: media?.backdrop}} style={{width: width, aspectRatio: 16/9}}/>
-
-                    )}
-                    
-                    <LinearGradient
-                        colors={['transparent', 'rgba(23,23,23,0.2)', 'rgba(23,23,23,1)']}
-                        start={{x: 0.5, y: 0}}
-                        end={{x: 0.5, y: 1}}
-                        style={{width: width, aspectRatio: 16/9}}
-                        className = "absolute bottom-0"
+        <View className = "bg-neutral-900 flex pb-1">
+            <SafeAreaView className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
+                <TouchableOpacity className = "rounded-xl p-1" onPress={() => navigation.goBack()}>
+                    <Icon
+                        name="arrow-left"
+                        color={"orange"}
+                        size={25}
                     />
-                </View>
-            </View>
+                </TouchableOpacity>
+            </SafeAreaView>
+            <ScrollView>
+                <View className = "w-full">
+                    <View className="rounded-xl bg-neutral-900">
+                        <Animated.View entering={FadeIn.duration(800)} style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
+                            <WebView
+                            source={{uri: route.params.media.trailer}}
+                            style={{width: width, aspectRatio: 16/9, }}
+                            mediaPlaybackRequiresUserAction={false}
+                            allowsInlineMediaPlayback={true}
+                            javaScriptEnabled={true}
+                            injectedJavaScript={`document.body.style.pointerEvents = 'none';`}
+                            />
+                        </Animated.View>
+                        {!trailerVisible && (
+                            <Image source={{uri: media?.backdrop}} style={{width: width, aspectRatio: 16/9}}/>
 
-            {/* Movie Info */}
-            <View style={{marginTop: -(height*0.01)}} className = "flex flex-row justify-between p-2">
-                <Image source={{uri: media?.poster}} style={{width: width*0.3, aspectRatio: 9/13}} className = " mx-2 rounded-xl"/>
-                <View className = "mx-1 flex flex-col" style={{width: width*0.6}}>
-                    <Text className="text-gray-200 text-2xl font-bold tracking-wider" numberOfLines={3}>{media?.title}</Text>
-                    <Text className="text-gray-400 text-lg">
-                        {media?.year}
-                        <Text className="text-gray-200 text-md"> • </Text>
-                        <Text className="flex flex-row">
-                            {media?.score ? (
-                                [...Array(5)].map((_, i) => {
-                                return (
-                                    <Icon
-                                        key={i}
-                                        name={i < media.score ? "star" : "star-o"}
-                                        size={15}
-                                        color= "orange"
-                                    />
-                                )
-                            })
-                            ) : null}
-                        </Text>
-                        </Text>
-                    <Text className="text-gray-400 text-md">
-                        {
-                            media?.genres.map((genre, index) => {
-                                return genre.name + (index < media.genres.length - 1 ? " • " : "")
-                            })
-                        }
-                    </Text>
-                    <Text className="text-gray-400 text-md">
-                        {media?.duration} min
-                    </Text>
-                    <TouchableOpacity className="mt-2" style = {{width:25}}>
-                        <Icon
-                            name={isFavorite ? "bookmark" : "bookmark-o"}
-                            color={isFavorite ? "orange" : "white"}
-                            size={25}
-                            onPress={() => setIsFavorite(!isFavorite)}
+                        )}
+                        
+                        <LinearGradient
+                            colors={['transparent', 'rgba(23,23,23,0.2)', 'rgba(23,23,23,1)']}
+                            start={{x: 0.5, y: 0}}
+                            end={{x: 0.5, y: 1}}
+                            style={{width: width, aspectRatio: 16/9}}
+                            className = "absolute bottom-0"
                         />
+                    </View>
+                </View>
+
+                {/* Movie Info */}
+                <View style={{marginTop: -(height*0.01)}} className = "flex flex-row justify-between p-2">
+                    <Image source={{uri: media?.poster}} style={{width: width*0.3, aspectRatio: 9/13}} className = " mx-2 rounded-xl"/>
+                    <View className = "mx-1 flex flex-col" style={{width: width*0.6}}>
+                        <Text className="text-gray-200 text-2xl font-bold tracking-wider" numberOfLines={3}>{media?.title}</Text>
+                        <Text className="text-gray-400 text-lg">
+                            {media?.year}
+                            <Text className="text-gray-200 text-md"> • </Text>
+                            <Text className="flex flex-row">
+                                {media?.score ? (
+                                    [...Array(5)].map((_, i) => {
+                                    return (
+                                        <Icon
+                                            key={i}
+                                            name={i < media.score ? "star" : "star-o"}
+                                            size={18}
+                                            color= "orange"
+                                        />
+                                    )
+                                })
+                                ) : null}
+                            </Text>
+                            </Text>
+                        <Text className="text-gray-400 text-md">
+                            {
+                                media?.genres.map((genre, index) => {
+                                    return genre.name + (index < media.genres.length - 1 ? " • " : "")
+                                })
+                            }
+                        </Text>
+                        <Text className="text-gray-400 text-md">
+                            {media?.duration} min
+                        </Text>
+                        <TouchableOpacity className="mt-2" style = {{width:25}}>
+                            <Icon
+                                name={isFavorite ? "bookmark" : "bookmark-o"}
+                                color={isFavorite ? "orange" : "white"}
+                                size={25}
+                                onPress={() => setIsFavorite(!isFavorite)}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg m-2">{media?.overview}</Text>
+                    
+                {/* Cast */}
+                <View className="flex flex-row justify-between p-2">
+                    <Text className="text-gray-200 text-lg font-bold">Cast</Text>
+                    <TouchableOpacity>
+                        <Text className="text-gray-400 text-md">See all</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
-            <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg m-2">{media?.overview}</Text>
-            <Text className="text-gray-200 text-md m-2">Cast: {media?.cast.map((actor, index) => {
-                return actor + (index < media.cast.length - 1 ? ", " : "")
-            })}</Text>
-        </ScrollView>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row p-2">
+                    {media?.actors?.map((actor, index) => {
+                        return (
+                            <View key={index} className="flex flex-col items-center mx-2">
+                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
+                                <Text className="text-gray-200 text-md">{actor.name}</Text>
+                            </View>
+                        )
+                    })}
+                </ScrollView>
+
+                {/* Streaming Availability */}
+                <View className="flex flex-row justify-between p-2">
+                    <Text className="text-gray-200 text-lg font-bold">Streaming Availability</Text>
+                    <TouchableOpacity>
+                        <Text className="text-gray-400 text-md">See all</Text>
+                    </TouchableOpacity>
+                </View>
+                <Text className="text-gray-200 text-md m-2">Available on:</Text>
+                <Text className="text-gray-200 text-md m-2">Not available on:</Text>
+                <Text className="text-gray-200 text-md m-2">Rent or buy:</Text>
+                <Text className="text-gray-200 text-md m-2">Free with ads:</Text>
+                <Text className="text-gray-200 text-md m-2">Free with subscription:</Text>
+            </ScrollView>
+
+        </View>
+
     )
 }

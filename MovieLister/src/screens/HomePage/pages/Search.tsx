@@ -8,7 +8,18 @@ import { Image } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 
-export type Media = streamingAvailability.Show & {trailer?: string, poster?: string, score?: number, backdrop?: string, duration?: number}
+export type Media = streamingAvailability.Show &
+{
+    trailer?: string,
+    poster?: string,
+    score?: number,
+    backdrop?: string,
+    duration?: number,
+    actors?: {
+        name: string,
+        imagePath: string
+    }[]
+}
 
 const {width, height} = Dimensions.get('window')
 
@@ -47,16 +58,12 @@ export default function Search({navigation} : {navigation: any}) {
                 Runtime: string,
               } = response.data;
               console.log(data);
-              //data.trailer = data.trailer.replace("watch?v=", "embed/");
-              //teke the trailer id which is the one after the embed/ part of the url
-              //const trailerId = data.trailer.split("embed/")[1];
 
               setMedias((prevMedias) => [
                 ...prevMedias,
-                { ...filteredMedias[i], trailer: data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + "&iv_load_policy=3&modestbranding=1", poster: data.Poster, score: Math.floor(Math.random() * 5) + 1, duration: parseInt(data.Runtime)}
+                { ...filteredMedias[i], poster: data.Poster, score: Math.floor(Math.random() * 5) + 1, duration: parseInt(data.Runtime), actors: []}
               ]);
-        
-              //await new Promise(resolve => setTimeout(resolve, 1500)); // Attesa di 1 secondo prima di procedere con la prossima iterazione a causa dell'api
+              
             } catch (error) {
               console.log("second request failed");
               console.error(error);
