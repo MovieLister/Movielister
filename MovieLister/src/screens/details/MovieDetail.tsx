@@ -31,44 +31,56 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
             }
         };
         try {
-            const response = await axios.request(options);
-            const data : {
-                trailer: string
-            } = response.data;
-            data.trailer = data.trailer.replace("watch?v=", "embed/");
-            const trailerId = data.trailer.split("embed/")[1];
-            route.params.media.trailer = data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + trailerId + "&iv_load_policy=3&modestbranding=1";
+            //const response = await axios.request(options);
+            //let trailerId = "";
+            //const data : {
+            //    trailer: string
+            //} = response.data;
+            //if(data.trailer){
+            //    data.trailer = data.trailer.replace("watch?v=", "embed/");
+            //    trailerId = data.trailer.split("embed/")[1];
+            //}
+            //route.params.media.trailer = data.trailer? (data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + trailerId + "&iv_load_policy=3&modestbranding=1") : undefined;
+            //if(data.trailer){
+            //    setTimeout(() => {
+            //        setTrailerVisible(true)
+            //        setTrailerVisible(false)
+            //    }, 0)
+            //    setTimeout(() => {
+            //        setTrailerVisible(true)
+            //    }, 2000)
+            //}
+            setTrailerVisible(false)
+            setMedia(route.params.media)
+
         } catch (error) {
             console.error(error);
         }
-        setMedia(route.params.media)
     }
 
-    const setActorImage = async (actor: string) => {
+    const setActorImage = (actor: string) => {
         try{
-            const actors = await axios.get("https://api.tmdb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor)
-            route.params.media.actors.push({name: actor, imagePath: "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path})
+            axios.get("https://api.tmdb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor).then((actors) => {
+                route.params.media.actors.push({name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"})
+
+            })
         } catch (error){
             console.log(error)
         }
         setMedia(route.params.media)
+
     }
 
     useEffect(() => {
-        setMovieTrailer(route.params.media.imdbId)
-        setTimeout(() => {
-            setTrailerVisible(true)
-        }, 4000)
         route.params.media.actors = []
         route.params.media.cast.forEach(async (actor : string) => {
-            await setActorImage(actor)
+            setActorImage(actor)
         })
-        setMedia(route.params.media)
-        
+        setMovieTrailer(route.params.media.imdbId)
     }, [])
 
     return (
-        <View className = "bg-neutral-900 flex pb-1">
+        <View className = "bg-neutral-900 flex pb-1 min-h-full">
             <SafeAreaView className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
                 <TouchableOpacity className = "rounded-xl p-1" onPress={() => navigation.goBack()}>
                     <Icon
@@ -81,7 +93,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
             <ScrollView>
                 <View className = "w-full">
                     <View className="rounded-xl bg-neutral-900">
-                        <Animated.View entering={FadeIn.duration(800)} style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
+                        <Animated.View style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
                             <WebView
                             source={{uri: route.params.media.trailer}}
                             style={{width: width, aspectRatio: 16/9, }}
@@ -136,9 +148,14 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                                 })
                             }
                         </Text>
-                        <Text className="text-gray-400 text-md">
-                            {media?.duration} min
-                        </Text>
+                        {
+                            media?.duration ? (
+                                <Text className="text-gray-400 text-md">
+                                    {media?.duration} min
+                                </Text>
+                            ) : null
+                        }
+                        
                         <TouchableOpacity className="mt-2" style = {{width:25}}>
                             <Icon
                                 name={isFavorite ? "bookmark" : "bookmark-o"}
@@ -154,27 +171,21 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                 {/* Cast */}
                 <View className="flex flex-row justify-between p-2">
                     <Text className="text-gray-200 text-lg font-bold">Cast</Text>
-                    <TouchableOpacity>
-                        <Text className="text-gray-400 text-md">See all</Text>
-                    </TouchableOpacity>
                 </View>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row p-2">
                     {media?.actors?.map((actor, index) => {
                         return (
-                            <View key={index} className="flex flex-col items-center mx-2">
+                            <TouchableOpacity key={index} className="flex flex-col items-center mx-2">
                                 <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
                                 <Text className="text-gray-200 text-md">{actor.name}</Text>
-                            </View>
+                            </TouchableOpacity>
                         )
-                    })}
+                    })} 
                 </ScrollView>
 
                 {/* Streaming Availability */}
                 <View className="flex flex-row justify-between p-2">
-                    <Text className="text-gray-200 text-lg font-bold">Streaming Availability</Text>
-                    <TouchableOpacity>
-                        <Text className="text-gray-400 text-md">See all</Text>
-                    </TouchableOpacity>
+                    <Text className="text-gray-200 text-lg font-bold">Streaming Platforms</Text>
                 </View>
                 <Text className="text-gray-200 text-md m-2">Available on:</Text>
                 <Text className="text-gray-200 text-md m-2">Not available on:</Text>

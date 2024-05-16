@@ -57,6 +57,7 @@ export default function Search({navigation} : {navigation: any}) {
                 Poster: string,
                 Runtime: string,
               } = response.data;
+              console.log(filteredMedias[i].streamingInfo[country].forEach((streamingOption) => console.log(streamingOption.link)))
 
               const tmdbResponse = await axios.get("https://api.themoviedb.org/3/find/" + filteredMedias[i].imdbId + "?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&external_source=imdb_id");
               let tmdbData : {
