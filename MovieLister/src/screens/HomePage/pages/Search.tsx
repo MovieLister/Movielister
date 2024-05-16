@@ -8,7 +8,7 @@ import { Image } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 
-export type Media = streamingAvailability.Show & {trailer?: string, poster?: string, score?: number, backdrop?: string}
+export type Media = streamingAvailability.Show & {trailer?: string, poster?: string, score?: number, backdrop?: string, duration?: number}
 
 const {width, height} = Dimensions.get('window')
 
@@ -25,6 +25,10 @@ export default function Search({navigation} : {navigation: any}) {
     const country = "it";
 
     async function getMedias(){
+        if(title == ""){
+            setMedias([]);
+            return;
+        }
         setIsLoading(true);
         try {
           const movies = await client.searchByTitle({
@@ -35,34 +39,24 @@ export default function Search({navigation} : {navigation: any}) {
         
           setMedias([]);
           const filteredMedias = movies.result.filter((media) => media.streamingInfo[country] != null);
-        
-          for (let i = 0; i < 1; i++){
-            const options = {
-              method: 'GET',
-              url: 'https://mdblist.p.rapidapi.com/',
-              params: { i: filteredMedias[i].imdbId },
-              headers: {
-                'X-RapidAPI-Key': '34e6333532msh483d7ba656aab5ep19aad0jsn4e0c708ddd57',
-                'X-RapidAPI-Host': 'mdblist.p.rapidapi.com'
-              }
-            };
+          for (let i = 0; i < filteredMedias.length; i++){
             try {
-              const response = await axios.request(options);
+              const response = await axios.get("http://www.omdbapi.com/?i=" + filteredMedias[i].imdbId + "&apikey=f6ca6b5c");
               const data : {
-                poster: string
-                trailer: string
-                backdrop: string
+                Poster: string,
+                Runtime: string,
               } = response.data;
-              data.trailer = data.trailer.replace("watch?v=", "embed/");
+              console.log(data);
+              //data.trailer = data.trailer.replace("watch?v=", "embed/");
               //teke the trailer id which is the one after the embed/ part of the url
-              const trailerId = data.trailer.split("embed/")[1];
+              //const trailerId = data.trailer.split("embed/")[1];
 
               setMedias((prevMedias) => [
                 ...prevMedias,
-                { ...filteredMedias[i], trailer: data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + trailerId + "&iv_load_policy=3&modestbranding=1", poster: data.poster, score: Math.floor(Math.random() * 5) + 1, backdrop: data.backdrop}
+                { ...filteredMedias[i], trailer: data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + "&iv_load_policy=3&modestbranding=1", poster: data.Poster, score: Math.floor(Math.random() * 5) + 1, duration: parseInt(data.Runtime)}
               ]);
         
-              await new Promise(resolve => setTimeout(resolve, 1500)); // Attesa di 1 secondo prima di procedere con la prossima iterazione a causa dell'api
+              //await new Promise(resolve => setTimeout(resolve, 1500)); // Attesa di 1 secondo prima di procedere con la prossima iterazione a causa dell'api
             } catch (error) {
               console.log("second request failed");
               console.error(error);

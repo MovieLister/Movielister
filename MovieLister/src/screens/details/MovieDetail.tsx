@@ -11,6 +11,7 @@ import LinearGradient from "react-native-linear-gradient"
 import YoutubeIframe from "react-native-youtube-iframe"
 import YoutubePlayer from "react-native-youtube-iframe"
 import WebView from "react-native-webview"
+import axios from "axios"
 
 const {width, height} = Dimensions.get('window')
 
@@ -18,11 +19,42 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
     const [isFavorite, setIsFavorite] = React.useState(false)
     const [media, setMedia] = React.useState<Media>()
     const [trailerVisible, setTrailerVisible] = React.useState(false)
-    useEffect(() => {
+
+    const setMovieTrailer = async (id: string) => {
+        const options = {
+            method: 'GET',
+            url: 'https://mdblist.p.rapidapi.com/',
+            params: { i: id },
+            headers: {
+              'X-RapidAPI-Key': '34e6333532msh483d7ba656aab5ep19aad0jsn4e0c708ddd57',
+              'X-RapidAPI-Host': 'mdblist.p.rapidapi.com'
+            }
+        };
+        try {
+            const response = await axios.request(options);
+            const data : {
+                trailer: string,
+                backdrop: string
+            } = response.data;
+            data.trailer = data.trailer.replace("watch?v=", "embed/");
+            const trailerId = data.trailer.split("embed/")[1];
+            route.params.media.trailer = data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + trailerId + "&iv_load_policy=3&modestbranding=1";
+            route.params.media.backdrop = data.backdrop
+        } catch (error) {
+            console.error(error);
+        }
         setMedia(route.params.media)
+    }
+
+    useEffect(() => {
+        setMovieTrailer(route.params.media.imdbId)
         setTimeout(() => {
             setTrailerVisible(true)
         }, 2000)
+        axios.get("https://api.themoviedb.org/3/person/31?api_key=ea43a2cafc528f04d5518b96b1ac4ad2").then((response) => {
+            console.log(response)
+        })
+        
     }, [])
 
     return (
@@ -93,7 +125,10 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                             })
                         }
                     </Text>
-                    <TouchableOpacity className="mt-3" style = {{width:25}}>
+                    <Text className="text-gray-400 text-md">
+                        {media?.duration} min
+                    </Text>
+                    <TouchableOpacity className="mt-2" style = {{width:25}}>
                         <Icon
                             name={isFavorite ? "bookmark" : "bookmark-o"}
                             color={isFavorite ? "orange" : "white"}
@@ -103,7 +138,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                     </TouchableOpacity>
                 </View>
             </View>
-            <Text className="text-gray-200 text-md m-2">{media?.overview}</Text>
+            <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg m-2">{media?.overview}</Text>
             <Text className="text-gray-200 text-md m-2">Cast: {media?.cast.map((actor, index) => {
                 return actor + (index < media.cast.length - 1 ? ", " : "")
             })}</Text>
