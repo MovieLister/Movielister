@@ -57,11 +57,20 @@ export default function Search({navigation} : {navigation: any}) {
                 Poster: string,
                 Runtime: string,
               } = response.data;
-              console.log(data);
 
+              const tmdbResponse = await axios.get("https://api.themoviedb.org/3/find/" + filteredMedias[i].imdbId + "?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&external_source=imdb_id");
+              let tmdbData : {
+                backdrop_path: string,
+              }
+                if(tmdbResponse.data.movie_results.length > 0){
+                    tmdbData = tmdbResponse.data.movie_results[0];
+                } else {
+                    tmdbData = tmdbResponse.data.tv_results[0];
+                }
+              console.log(tmdbResponse.data)
               setMedias((prevMedias) => [
                 ...prevMedias,
-                { ...filteredMedias[i], poster: data.Poster, score: Math.floor(Math.random() * 5) + 1, duration: parseInt(data.Runtime), actors: []}
+                { ...filteredMedias[i], poster: data.Poster, score: Math.floor(Math.random() * 5) + 1, duration: parseInt(data.Runtime), actors: [], backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path}
               ]);
               
             } catch (error) {

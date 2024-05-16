@@ -33,13 +33,11 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
         try {
             const response = await axios.request(options);
             const data : {
-                trailer: string,
-                backdrop: string
+                trailer: string
             } = response.data;
             data.trailer = data.trailer.replace("watch?v=", "embed/");
             const trailerId = data.trailer.split("embed/")[1];
             route.params.media.trailer = data.trailer + "?controls=0&autoplay=1&loop=1&playlist=" + trailerId + "&iv_load_policy=3&modestbranding=1";
-            route.params.media.backdrop = data.backdrop
         } catch (error) {
             console.error(error);
         }
@@ -60,7 +58,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
         setMovieTrailer(route.params.media.imdbId)
         setTimeout(() => {
             setTrailerVisible(true)
-        }, 2000)
+        }, 4000)
         route.params.media.actors = []
         route.params.media.cast.forEach(async (actor : string) => {
             await setActorImage(actor)
