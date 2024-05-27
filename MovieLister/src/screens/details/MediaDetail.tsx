@@ -15,13 +15,12 @@ import axios from "axios"
 
 const {width, height} = Dimensions.get('window')
 
-export default function MovieDetail({route, navigation} : {route: any, navigation: any}) {
+export default function MediaDetail({route, navigation} : {route: any, navigation: any}) {
     const [isFavorite, setIsFavorite] = React.useState(false)
     const [media, setMedia] = React.useState<Media>(route.params.media)
     const [trailerVisible, setTrailerVisible] = React.useState(false)
     const called = React.useRef(false)
     const setMovieTrailer = async (id: string) => {
-        console.log("called")
         const options = {
             method: 'GET',
             url: 'https://mdblist.p.rapidapi.com/',
@@ -32,16 +31,15 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
             }
         };
         try {
-            //const response = await axios.request(options);
+            const response = await axios.request(options);
             let trailerId = ""
             const data : {
                 trailer: string
-            } = {trailer: "https://www.youtube.com/watch?v=LjkjJAtcKbA"}
+            } = {trailer: response.data.trailer}
             if(data.trailer){
                 data.trailer = data.trailer.replace("watch?v=", "embed/")
                 trailerId = data.trailer.split("embed/")[1]
             }
-            console.log("dataTrailer", data.trailer)
             setMedia(prevMedia => ({
                 ...prevMedia,
                 trailer: !!data.trailer ? `${data.trailer}?controls=0&autoplay=1&loop=1&playlist=${trailerId}&iv_load_policy=3&modestbranding=1` : undefined
@@ -78,10 +76,6 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
             setActorImage(actor)
         })
     }, [])
-
-    useEffect(() => {
-        console.log("pisello", media.trailer)
-    }, [media.trailer])
 
     return (
         <View className = "bg-neutral-900 flex pb-1 min-h-full">
@@ -182,7 +176,7 @@ export default function MovieDetail({route, navigation} : {route: any, navigatio
                     {media?.actors?.map((actor, index) => {
                         return (
                             <TouchableOpacity key={index} className="flex flex-col items-center mx-2">
-                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-3xl"/>
+                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
                                 <Text className="text-gray-200 text-md">{actor.name}</Text>
                             </TouchableOpacity>
                         )

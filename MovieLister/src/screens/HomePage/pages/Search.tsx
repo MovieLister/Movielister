@@ -137,7 +137,7 @@ export default function Search({navigation} : {navigation: any}) {
                             {medias.map((media, index) => {
                                 return (
                                         <Animated.View key={index} style={{width:width/3.5}} className="rounded-xl m-1 flex flex-col justify-between" entering={FadeInUp.delay(index * 100).duration(400).springify()}>
-                                            <TouchableOpacity onPress={() => navigation.push("MovieDetail", {media: media})}>
+                                            <TouchableOpacity onPress={() => navigation.push("MediaDetail", {media: media})}>
                                                 <View className="w-5/6 m-2">
                                                     <Image source={{uri: media.poster}}  style={{aspectRatio: 9/13}} className = "w-full rounded-xl"/>
                                                 </View>
