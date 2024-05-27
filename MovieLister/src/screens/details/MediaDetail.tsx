@@ -167,7 +167,6 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                     </View>
                 </View>
                 <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg m-2">{media?.overview}</Text>
-                <Text className="text-gray-200 text-lg m-2">{media.trailer}</Text>
                 {/* Cast */}
                 <View className="flex flex-row justify-between p-2">
                     <Text className="text-gray-200 text-lg font-bold">Cast</Text>
