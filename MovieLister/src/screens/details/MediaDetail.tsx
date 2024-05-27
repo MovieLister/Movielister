@@ -124,7 +124,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                     <View className = "mx-1 flex flex-col" style={{width: width*0.6}}>
                         <Text className="text-gray-200 text-2xl font-bold tracking-wider" numberOfLines={3}>{media?.title}</Text>
                         <Text className="text-gray-400 text-lg">
-                            {media?.year}
+                            {media.type === streamingAvailability.ShowTypeEnum.Movie ? media.year : media.firstAirYear}
                             <Text className="text-gray-200 text-md"> • </Text>
                             <Text className="flex flex-row">
                                 {media?.score ? (
