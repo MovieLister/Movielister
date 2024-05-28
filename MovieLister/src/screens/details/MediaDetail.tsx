@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Dimensions, ScrollView, Text, TextInput, TouchableOpacity, View, Linking } from "react-native"
 import React, { useEffect } from "react"
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Colors } from "react-native/Libraries/NewAppScreen"
@@ -12,6 +12,7 @@ import YoutubeIframe from "react-native-youtube-iframe"
 import YoutubePlayer from "react-native-youtube-iframe"
 import WebView from "react-native-webview"
 import axios from "axios"
+import LinkIcon, { StreamingServices } from "../../components/LinkIcon"
 
 const {width, height} = Dimensions.get('window')
 
@@ -19,7 +20,9 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
     const [isFavorite, setIsFavorite] = React.useState(false)
     const [media, setMedia] = React.useState<Media>(route.params.media)
     const [trailerVisible, setTrailerVisible] = React.useState(false)
+    const [streamingServicesVisible, setStreamingServicesVisible] = React.useState(false)
     const called = React.useRef(false)
+    const country = "it"
     const setMovieTrailer = async (id: string) => {
         const options = {
             method: 'GET',
@@ -68,6 +71,26 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
         }
     }
 
+    const removeStreamingDuplicates = () => {
+        let unique : string[] = []
+        let uniqueStreaming = media.streamingInfo[country].filter((streaming) => {
+            if(unique.includes(streaming.service)){
+                return false
+            } else {
+                unique.push(streaming.service)
+                return true
+            }
+        })
+        setMedia(prevMedia => ({
+            ...prevMedia,
+            streamingInfo: {
+                ...prevMedia.streamingInfo,
+                [country]: uniqueStreaming
+            }
+        }))
+        setStreamingServicesVisible(true)
+    }
+
     useEffect(() => {
         if(called.current) return;
         called.current = true;
@@ -75,6 +98,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
         route.params.media.cast.forEach(async (actor : string) => {
             setActorImage(actor)
         })
+        removeStreamingDuplicates()
     }, [])
 
     return (
@@ -83,6 +107,13 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                 <TouchableOpacity className = "rounded-xl p-1" onPress={() => navigation.goBack()}>
                     <Icon
                         name="arrow-left"
+                        color={"orange"}
+                        size={25}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity className="mt-2 ml-1 p-3" onPress={() => setIsFavorite(!isFavorite)}>
+                    <Icon
+                        name={isFavorite ? "bookmark" : "bookmark-o"}
                         color={"orange"}
                         size={25}
                     />
@@ -156,43 +187,41 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                             ) : null
                         }
                         
-                        <TouchableOpacity className="mt-2" style = {{width:25}}>
-                            <Icon
-                                name={isFavorite ? "bookmark" : "bookmark-o"}
-                                color={isFavorite ? "orange" : "white"}
-                                size={25}
-                                onPress={() => setIsFavorite(!isFavorite)}
-                            />
-                        </TouchableOpacity>
+                        
+                        {streamingServicesVisible && (
+                            <View className="flex flex-row">
+                                {
+                                    media.streamingInfo[country].map((streaming, index) => {
+                                        return (
+                                            <LinkIcon key={index} href={streaming.link} service={streaming.service as StreamingServices} />
+                                        )
+                                    })
+                                }
+                            </View>
+                        
+                        )}
+                        
                     </View>
                 </View>
-                <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg m-2">{media?.overview}</Text>
+                <Text style={{fontFamily: 'sans-serif-light'}} className="text-gray-200 text-lg mx-4 mt-1 text-justify">{media?.overview}</Text>
                 {/* Cast */}
-                <View className="flex flex-row justify-between p-2">
-                    <Text className="text-gray-200 text-lg font-bold">Cast</Text>
+                <View className="flex flex-row px-4">
+                    <Text className="text-gray-200 text-xl font-bold">Cast</Text>
                 </View>
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row p-2">
-                    {media?.actors?.map((actor, index) => {
-                        return (
-                            <TouchableOpacity key={index} className="flex flex-col items-center mx-2">
-                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
-                                <Text className="text-gray-200 text-md">{actor.name}</Text>
-                            </TouchableOpacity>
-                        )
-                    })} 
-                </ScrollView>
-
-                {/* Streaming Availability */}
-                <View className="flex flex-row justify-between p-2">
-                    <Text className="text-gray-200 text-lg font-bold">Streaming Platforms</Text>
-                </View>
-                <Text className="text-gray-200 text-md m-2">Available on:</Text>
-                <Text className="text-gray-200 text-md m-2">Not available on:</Text>
-                <Text className="text-gray-200 text-md m-2">Rent or buy:</Text>
-                <Text className="text-gray-200 text-md m-2">Free with ads:</Text>
-                <Text className="text-gray-200 text-md m-2">Free with subscription:</Text>
+                {streamingServicesVisible && (
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row p-2">
+                        {media?.actors?.map((actor, index) => {
+                            return (
+                                <TouchableOpacity key={index} className="flex flex-col items-center mx-2">
+                                    <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
+                                    <Text className="text-gray-200 text-md">{actor.name}</Text>
+                                </TouchableOpacity>
+                            )
+                        })} 
+                    </ScrollView>
+                )}
+                
             </ScrollView>
-
         </View>
 
     )
