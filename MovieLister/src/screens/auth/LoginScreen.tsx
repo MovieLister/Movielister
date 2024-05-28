@@ -1,7 +1,9 @@
 import { View, Text, TextInput, TouchableOpacity, StatusBar } from 'react-native'
 import React from 'react'
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
+import { api } from "../../helpers/api"
+import Config from 'react-native-config';
 
 export default function LoginScreen({navigation} : {navigation: any}) {
     const [formData, setFormData] = React.useState({
@@ -14,21 +16,23 @@ export default function LoginScreen({navigation} : {navigation: any}) {
 
     const handleLogin = async () => {
         console.log(formData)
-        axios.post(`http://192.168.116.8:3000/auth/login`, formData).then((result: AxiosResponse) => {
+        console.log("CONFIG_", Config.API_URL)
+        api.post(`/auth/login`, formData).then((result: AxiosResponse) => {
             console.log(result.status)
+            api.defaults.headers.common['Authorization'] = `Bearer ${result.data.data.jwt}`
             navigation.push('HomePage')
         })
-        .catch((error: AxiosError) => {
-            setErrorText(error.response?.data.message)
+        .catch((error: AxiosError) => { 
+            setErrorText((error.response?.data as { message?: string })?.message ?? "")
             setErrorViewHidden("")
         })
     }
 
     return (
-        <View className = "bg-white h-full w-full">
+        <View className="bg-white h-full w-full">
             <StatusBar hidden />
             <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background.jpg')} />
-            
+
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pb-10">
                 

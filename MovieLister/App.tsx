@@ -14,7 +14,7 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='HomePage' screenOptions={{headerShown: false, animation: 'none'}}>
+        <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false, animation: 'none'}}>
           <Stack.Screen name="Login" component={loginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="HomePage" component={HomePage} />

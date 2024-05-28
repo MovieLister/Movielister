@@ -1,9 +1,9 @@
 import "dotenv/config"
 import Fastify from "fastify"
 import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts"
-import type { User } from "./db/schema"
 import authRouter from "./routers/authRouter"
 import usersRouter from "./routers/usersRouter"
+import ExtendedError from "./helpers/ExtendedError"
 
 void (async () => {
   const server = Fastify({
@@ -15,10 +15,18 @@ void (async () => {
     }
   }).withTypeProvider<JsonSchemaToTsProvider>()
 
+
+  server.setErrorHandler((error, request, reply) => {
+    if (error instanceof ExtendedError) {
+      return reply.status(error.errorCode).send({ error: error.message })
+    }
+    return reply.status(500).send({ error: error.message })
+  })
+
   server.register(require("@fastify/cors"), { origin: "*" })
 
   server.get("/", async (req, res) => {
-    console.log("Hello World")
+    res.send("Server is Alive!")
   })
 
   server.register(authRouter, { prefix: "/auth" })

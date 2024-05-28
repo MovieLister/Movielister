@@ -1,7 +1,8 @@
-import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
-import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutUp } from 'react-native-reanimated';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { AxiosError, AxiosResponse } from 'axios';
+import { api } from "../../helpers/api"
 
 export default function SignupScreen({navigation} : {navigation: any}) {
     const [formData, setFormData] = React.useState({
@@ -10,7 +11,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
         password: '',
         confirmPassword: ''
     })
-    
+
     const [errorViewHidden, setErrorViewHidden] = React.useState("hidden")
     const [errorText, setErrorText] = React.useState('')
 
@@ -20,12 +21,13 @@ export default function SignupScreen({navigation} : {navigation: any}) {
             setErrorViewHidden("")
             return
         }
-        axios.post("http://192.168.116.8:3000/auth/register", formData).then((result: AxiosResponse) => {
+        api.post("/auth/register", formData).then((result: AxiosResponse) => {
             console.log(result.status)
+            api.defaults.headers.common['Authorization'] = `Bearer ${result.data.data.jwt}`
             navigation.push('HomePage')
         })
         .catch((error: AxiosError) => {
-            setErrorText(error.response?.data.message)
+            setErrorText((error.response?.data as { message?: string })?.message ?? "")
             setErrorViewHidden("")
         })
     }
@@ -53,7 +55,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                             placeholderTextColor={'gray'}
                             value={formData.username}
                             onChangeText={(text) => setFormData({...formData, username: text})}
-                            
+
                         />
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} className = "bg-black/5 p-2 rounded-2xl w-full">

@@ -21,7 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "app/*": ["./app/*"],
-      "assets/*": ["./assets/*"]
+      "assets/*": ["./assets/*"],
+      "@/*": ["./src/*"]
     }
   },
   "ts-node": {
@@ -32,6 +33,16 @@
       "module": "commonjs"
     }
   },
-  "include": ["index.js", "App.tsx", "app", "types", "plugins", "app.config.ts", "**/*.tsx", "app.d.ts", "nativewind-env.d.ts"],
+  "include": [
+    "index.js",
+    "App.tsx",
+    "app",
+    "types",
+    "plugins",
+    "app.config.ts",
+    "**/*.tsx",
+    "app.d.ts",
+    "nativewind-env.d.ts"
+  ],
   "exclude": ["node_modules", "test/**/*"]
 }

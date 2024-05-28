@@ -5,7 +5,7 @@ import "dotenv/config"
 
 export default defineConfig({
   schema: "./src/db/schema.ts",
-  driver: 'pg',
+  dialect: 'pg',
   dbCredentials: {
     connectionString: process.env.PG_CONNECTION_STRING as string,
   },

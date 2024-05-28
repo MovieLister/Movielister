@@ -1,20 +1,19 @@
-import { TouchableOpacity } from "react-native"
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import React, { useEffect } from "react"
+import { TouchableOpacity, StatusBar } from "react-native"
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Colors } from "react-native/Libraries/NewAppScreen"
 import * as Animatable from 'react-native-animatable'
 import Discover from "./pages/Discover"
 import Account from "./pages/Account"
 import Search from "./pages/Search"
-import { StatusBar } from 'react-native';
 
 const TabArr = [
     {
         route: "Discover",
         label: "Discover",
         activeIcon: "list-ul",
-        //inactiveIcon: nome_icona inattiva
+        // inactiveIcon: nome_icona inattiva
         component: Discover
 
     },
@@ -22,14 +21,14 @@ const TabArr = [
         route: "Search",
         label: "Search",
         activeIcon: "search",
-        //inactiveIcon: nome_icona
+        // inactiveIcon: nome_icona
         component: Search
     },
     {
         route: "Account",
         label: "Account",
         activeIcon: "user-circle-o",
-        //inactiveIcon: nome_icona
+        // inactiveIcon: nome_icona
         component: Account
     }
 ]
@@ -38,15 +37,15 @@ const Tab = createBottomTabNavigator();
 const TabButton = (props: any) => {
     const  {tab, onPress, accessibilityState} = props
     const focused = accessibilityState.selected
-    const viewRef = React.useRef(null)
+    const viewRef = React.useRef<Animatable.View>(null)
 
     useEffect(() => {
         StatusBar.setHidden(true)
         if (focused) {
-            viewRef.current.animate({0: {scale: 1}, 1: {scale: 1.3}}, 200)
+            viewRef.current?.animate({0: {scaleX: 1, scaleY: 1}, 1: {scaleX: 1.3, scaleY: 1.3}}, 200)
         }
         else{
-            viewRef.current.animate({0: {scale: 1.3}, 1: {scale: 1}}, 200)
+            viewRef.current?.animate({0: {scaleX: 1.3, scaleY: 1.3}, 1: {scaleX: 1, scaleY: 1}}, 200)
         }
     }, [focused])
     return (
@@ -60,17 +59,17 @@ const TabButton = (props: any) => {
                 <Icon
                     name={tab.activeIcon}
                     size={24}
-                    color={focused ? "orange" : null} //TODO: Da cambiare il colore dell'inattiva
+                    color={focused ? "orange" : undefined} //TODO: Da cambiare il colore dell'inattiva
                 />
             </Animatable.View>
-           
+
         </TouchableOpacity>
     )
 }
 
 export default function HomePage(){
     return (
-        <Tab.Navigator 
+        <Tab.Navigator
             screenOptions={
                 {
                     headerShown: false,

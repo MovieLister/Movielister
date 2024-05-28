@@ -6,6 +6,8 @@ import Animated, { FadeInDown, FadeOutDown, ZoomIn } from "react-native-reanimat
 import Icon from "react-native-vector-icons/FontAwesome";
 import {User} from "../../../../../server/src/db/schema";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { api } from "../../../helpers/api";
+import { AxiosError } from "axios";
 
 enum FORMDATAFIELDS {
     EMAIL = "Email",
@@ -26,11 +28,12 @@ export default function Account({navigation} : {navigation: any}) {
 
     function getProfile() {
         //TODO: Sostituire l'email con quella che verrà passata tramite sessione o jwt o quel che è 
-        axios.post("http://192.168.116.8:3000/users/getUser", {email: "a"}).then((result: AxiosResponse) => {
-            setUser(result.data.user)
+        api.post("/users/getSelfUser").then((result: AxiosResponse) => {
+            console.log("data:", result.data)
+            setUser(result.data)
             setFormData({email: "", username: "", password: ""})
         })
-        .catch((error) => {
+        .catch((error: AxiosError) => {
             console.log(error)
         })
     }
@@ -76,7 +79,7 @@ export default function Account({navigation} : {navigation: any}) {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View className = "w-full h-full flex justify-center items-center" style = {{backgroundColor : "rgba(0,0,0,0.8)"}} >
-                    <View className = "w-4/5 h-1/4 bg-neutral-800 rounded-2xl">
+                    <View className = "w-4/5 h-1/4 bg-neutral-800 rounded-xl">
                         <View className = "flex flex-row items-center h-1/4">
                             <Text className = "text-black text-2xl mt-3 text-white ml-3 w-5/6">Change {fieldToChange}</Text>
                             <View className = "flex justify-center w-1/6 mt-4 ml-1">
@@ -93,7 +96,7 @@ export default function Account({navigation} : {navigation: any}) {
                             <TextInput
                                 placeholder={"New " + fieldToChange}
                                 placeholderTextColor={"gray"}
-                                className = "w-4/5 h-10 m-3 rounded-2xl bg-neutral-200 text-gray-700"
+                                className = "w-4/5 h-10 m-3 rounded-lg bg-neutral-200 text-gray-700 px-2"
                                 onChangeText={(text) => {updateFormData(fieldToChange!, text)}}
                                 onSubmitEditing={() => changeUserData()}
                             />

@@ -9,3 +9,4 @@ export const users = pgTable("Users", {
 
 
 export type User = typeof users.$inferSelect
+export type UserFront = Pick<User, "id" | "username" | "email">
