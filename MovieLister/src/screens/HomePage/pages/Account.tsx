@@ -124,7 +124,7 @@ export default function Account({navigation} : {navigation: any}) {
                 <View className="w-4/6 items-center">
                     <Text className="text-white font-bold text-2xl">Account</Text>
                 </View>
-                <View className = "w-1/6 items-end pr-3">
+                <View className = "w-1/6 items-end pr-1">
                     <Icon
                         name="sign-out"
                         color={"white"}
