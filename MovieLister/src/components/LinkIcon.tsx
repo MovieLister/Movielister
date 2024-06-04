@@ -66,11 +66,7 @@ export default function LinkIcon({ href, service } : LinkIconProps) {
           return <Image style={{aspectRatio:1, height:height/22}} className = "rounded-xl mr-2" source={require("../../assets/apple.png")}  />
       }
     }
-
-    useEffect(() => {
-        console.log(service)
-    }, []);
-
+    
     return (
         <TouchableOpacity onPress={() => handleClick()} className="mt-1" style={{aspectRatio: 1}}>
             {

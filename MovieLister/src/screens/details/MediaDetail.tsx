@@ -8,21 +8,60 @@ import { Image } from "react-native-elements"
 import { Media } from "../HomePage/pages/Search"
 import { SafeAreaView } from "react-native-safe-area-context"
 import LinearGradient from "react-native-linear-gradient"
-import YoutubeIframe from "react-native-youtube-iframe"
-import YoutubePlayer from "react-native-youtube-iframe"
 import WebView from "react-native-webview"
 import axios from "axios"
 import LinkIcon, { StreamingServices } from "../../components/LinkIcon"
+import DropDownPicker from "react-native-dropdown-picker"
+import { act } from "react-test-renderer"
+import { api } from "../../helpers/api"
+import { UserFront } from "../../../../server/src/db/schema"
 
 const {width, height} = Dimensions.get('window')
 
+type Season = {
+    id: number,
+    episodes: {
+        id: number,
+        name: string,
+        overview: string,
+        still_path: string,
+        episodeNumber: number,
+        seasonNumber: number,
+        runtime: number
+    }[]
+}
+
+type SeasonList = {
+    label: string,
+    value: number
+}
+
 export default function MediaDetail({route, navigation} : {route: any, navigation: any}) {
-    const [isFavorite, setIsFavorite] = React.useState(false)
+    const [user, setUser] = React.useState<UserFront>()
+    const [isFavourite, setIsFavourite] = React.useState(false)
     const [media, setMedia] = React.useState<Media>(route.params.media)
     const [trailerVisible, setTrailerVisible] = React.useState(false)
     const [streamingServicesVisible, setStreamingServicesVisible] = React.useState(false)
+    const [season, setSeason] = React.useState<Season>()
+    const [actualSeasonNumber, setActualSeasonNumber] = React.useState(0)
+    const [seasonList, setSeasonList] = React.useState<SeasonList[]>([])
+    const [open, setOpen] = React.useState(false);
+    const [value, setValue] = React.useState(0);
     const called = React.useRef(false)
     const country = "it"
+
+    const getActualUser = async () => {
+        try{
+            const response = await api.post("/users/getSelfUser")
+            setUser(response.data)
+            if(response.data.favourites.includes(media.tmdbId)){
+                setIsFavourite(true)
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
     const setMovieTrailer = async (id: string) => {
         const options = {
             method: 'GET',
@@ -59,8 +98,12 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
     }
 
     const setActorImage = async (actor: string) => {
+        setMedia(prevMedia => ({
+            ...prevMedia,
+            actors: []
+        }))
         try{
-            const actors = await axios.get("https://api.tmdb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor)
+            const actors = await axios.get("https://api.themoviedb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor)
             setMedia(prevMedia => ({
                 ...prevMedia,
                 actors: [...prevMedia.actors!, {name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"}]
@@ -73,7 +116,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
 
     const removeStreamingDuplicates = () => {
         let unique : string[] = []
-        let uniqueStreaming = media.streamingInfo[country].filter((streaming) => {
+        let uniqueStreaming = media.streamingInfo[country]?.filter((streaming) => {
             if(unique.includes(streaming.service)){
                 return false
             } else {
@@ -91,15 +134,95 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
         setStreamingServicesVisible(true)
     }
 
+    const removeEpisodesStreamingDuplicates = () => {
+        const tempMedia = media
+        tempMedia.seasons![actualSeasonNumber].episodes.forEach((episode, index) => {
+            let unique : string[] = []
+            let uniqueStreaming = episode.streamingInfo[country]?.filter((streaming) => {
+                if(unique.includes(streaming.service)){
+                    return false
+                } else {
+                    unique.push(streaming.service)
+                    return true
+                }
+            })
+            setMedia(prevMedia => ({
+                ...prevMedia,
+                seasons: prevMedia.seasons?.map((season, i) => {
+                    if(i === actualSeasonNumber){
+                        return {
+                            ...season,
+                            episodes: season.episodes.map((episode, j) => {
+                                if(j === index){
+                                    return {
+                                        ...episode,
+                                        streamingInfo: {
+                                            ...episode.streamingInfo,
+                                            [country]: uniqueStreaming?.sort((a, b) => {
+                                                return a.service > b.service ? 1 : -1
+                                            })
+                                        }
+                                    }
+                                } else {
+                                    return episode
+                                }
+                            })
+                        }
+                    } else {
+                        return season
+                    }
+                })
+            }))
+        })
+    }
+
+    const getSeasonInfo = async (season_number : number) => {
+        const season = await axios.get("https://api.themoviedb.org/3/tv/" + media.tmdbId + "/season/" + season_number + "?api_key=ea43a2cafc528f04d5518b96b1ac4ad2")
+        setSeason(season.data)
+    }
+
+    const updateUsersFavourites = async () => {
+        try{
+            if(isFavourite){
+                const response = await api.post("/users/removeFavourite", {favourite: media.tmdbId})
+                console.log(response.data)
+            }
+            else{
+                const response = await api.post("/users/addFavourite", {favourite: media.tmdbId})
+                console.log(response.data)
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
-        if(called.current) return;
-        called.current = true;
+        if(called.current) return
+        called.current = true
+        getActualUser()
         setMovieTrailer(media.imdbId)
         route.params.media.cast.forEach(async (actor : string) => {
             setActorImage(actor)
         })
         removeStreamingDuplicates()
+        if(media.type === streamingAvailability.ShowTypeEnum.Series){
+            getSeasonInfo(1)
+            setSeasonList([...Array(media.seasons!.length)].map((_, i) => {
+                return {
+                    label: "Season " + (i+1),
+                    value: i
+                }
+            }))
+            removeEpisodesStreamingDuplicates()
+        }
     }, [])
+
+    useEffect(() => {
+        if(media.type === streamingAvailability.ShowTypeEnum.Series){
+            removeEpisodesStreamingDuplicates()
+        }
+    }, [actualSeasonNumber])
 
     return (
         <View className = "bg-neutral-900 flex pb-1 min-h-full">
@@ -111,15 +234,18 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                         size={25}
                     />
                 </TouchableOpacity>
-                <TouchableOpacity className="mt-2 ml-1 p-3" onPress={() => setIsFavorite(!isFavorite)}>
+                <TouchableOpacity className="mt-2 ml-1 p-3" onPress={() => {
+                    updateUsersFavourites()
+                    setIsFavourite(!isFavourite)
+                    }}>
                     <Icon
-                        name={isFavorite ? "bookmark" : "bookmark-o"}
+                        name={isFavourite ? "bookmark" : "bookmark-o"}
                         color={"orange"}
                         size={25}
                     />
                 </TouchableOpacity>
             </SafeAreaView>
-            <ScrollView>
+            <ScrollView nestedScrollEnabled={true}>
                 <View className = "w-full">
                     <View className="rounded-xl bg-neutral-900">
                         <Animated.View style={{width: width, aspectRatio: 16/9, display: trailerVisible ? "flex" : "none"}}>
@@ -149,7 +275,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                     </View>
                 </View>
 
-                {/* Movie Info */}
+                {/* Media Info */}
                 <View style={{marginTop: -(height*0.01)}} className = "flex flex-row justify-between p-2">
                     <Image source={{uri: media?.poster}} style={{width: width*0.3, aspectRatio: 9/13}} className = " mx-2 rounded-xl"/>
                     <View className = "mx-1 flex flex-col" style={{width: width*0.6}}>
@@ -187,11 +313,10 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                             ) : null
                         }
                         
-                        
                         {streamingServicesVisible && (
                             <View className="flex flex-row">
                                 {
-                                    media.streamingInfo[country].map((streaming, index) => {
+                                    media.streamingInfo[country]?.map((streaming, index) => {
                                         return (
                                             <LinkIcon key={index} href={streaming.link} service={streaming.service as StreamingServices} />
                                         )
@@ -208,18 +333,76 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                 <View className="flex flex-row px-4">
                     <Text className="text-gray-200 text-xl font-bold">Cast</Text>
                 </View>
-                {streamingServicesVisible && (
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row p-2">
-                        {media?.actors?.map((actor, index) => {
-                            return (
-                                <TouchableOpacity key={index} className="flex flex-col items-center mx-2">
-                                    <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
-                                    <Text className="text-gray-200 text-md">{actor.name}</Text>
-                                </TouchableOpacity>
-                            )
-                        })} 
-                    </ScrollView>
-                )}
+                
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row p-1">
+                    {media?.actors?.map((actor, index) => {
+                        return (
+                            <View key={index} className="flex flex-col items-center mx-2">
+                                <Image source={{uri: actor.imagePath}} style={{width: width*0.2, aspectRatio: 1}} className="rounded-full"/>
+                                <Text className="text-gray-200 text-md">{actor.name}</Text>
+                            </View>
+                        )
+                    })} 
+                </ScrollView>
+                
+                {/* episodes of season 1 */}
+                { media.type === streamingAvailability.ShowTypeEnum.Series && season ? (
+                    <View className="mt-1">
+                        <Text className="text-gray-200 text-xl mx-4 font-bold">Episodes</Text>
+                        <View style={{width: width * 0.33}} className="mx-4 my-1">
+                            {/* TODO: mettere a posto perche' non funziona lo scrolle dentro una webview */}
+                            <DropDownPicker
+                                items={seasonList}
+                                open={open}
+                                value={value}
+                                setOpen={setOpen}
+                                setValue={setValue}
+                                setItems={setSeasonList}
+                                onChangeValue={(value) => {
+                                    if(value === actualSeasonNumber) return
+                                    if(value != undefined){
+                                        setActualSeasonNumber(value)
+                                        getSeasonInfo(value + 1)
+                                    }
+                                }}
+                                theme="DARK"
+                            />
+                        </View>
+                        <View className="items-center">
+                            <ScrollView className="flex flex-row">
+                                {season?.episodes.map((episode, index) => {
+                                    return (
+                                        <Animated.View key={index} className="flex flex-row bg-neutral-800 rounded-xl my-1 px-2 py-1" style={{width: width * 0.93}} entering={FadeInLeft.delay(300*index).duration(500).springify()}>
+                                            <View className="mt-1">
+                                                {episode.still_path ? (
+                                                    <Image source={{uri: "https://image.tmdb.org/t/p/original" + episode.still_path}} style={{width: width*0.35, height: height * 0.12}} className="rounded-lg flex"/>
+                                                ) : (
+                                                    <Image source = {require("../../../assets/placeholder.jpg")} style={{width: width*0.35, height: height * 0.12}} className="rounded-lg flex"/>
+                                                )}
+                                            </View>
+                                            <View className="mx-2" style={{width: width * 0.52}}>
+                                                <Text className="text-gray-200 text-lg font-bold tracking-wider">
+                                                    {episode.name}
+                                                    {episode.runtime ? (
+                                                        <Text className="text-gray-200 text-md"> • <Text className="text-gray-500 text-base">{episode.runtime} min</Text></Text>
+                                                    ) : null}
+                                                </Text>
+                                                <Text className="text-gray-400 text-sm" numberOfLines={3}>{episode.overview}</Text>
+                                                <View className="flex flex-row justify-end">
+                                                    { media.seasons![actualSeasonNumber].episodes[index]?.streamingInfo[country]?.map((streaming, index) => {
+                                                        return (
+                                                            <LinkIcon key={index} href={streaming.link} service={streaming.service as StreamingServices} />
+                                                        )
+                                                    })}
+                                                </View>
+                                            </View>
+                                        </Animated.View>
+                                    )
+                                })}
+                            </ScrollView>
+                        </View>
+                    </View>
+                ) : null}
                 
             </ScrollView>
         </View>

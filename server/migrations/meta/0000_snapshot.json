@@ -1,10 +1,8 @@
 {
-  "id": "043b9448-e2b2-487b-bdb5-71f595d8ed83",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "Users": {
+    "public.Users": {
       "name": "Users",
       "schema": "",
       "columns": {
@@ -39,10 +37,10 @@
       "uniqueConstraints": {
         "Users_email_unique": {
           "name": "Users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     }
@@ -50,8 +48,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "043b9448-e2b2-487b-bdb5-71f595d8ed83",
+  "prevId": "00000000-0000-0000-0000-000000000000"
 }

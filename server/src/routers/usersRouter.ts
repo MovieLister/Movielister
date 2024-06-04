@@ -22,6 +22,30 @@ const router: FastifyPluginCallback = async (server, _, done) => {
     return res.status(200).send(user)
   })
 
+  server.post("/addFavourite", async(req : FastifyRequest <{Body: {favourite: string}}>, res) => {
+    // check for authentication and get user data from jwt in req
+    const user = await verifyUser(req, res, db)
+    console.log(req.body.favourite)
+    const userFavourites : [string]= user.favourites as [string]
+    userFavourites.push(req.body.favourite)
+    // add favourite to user
+    await db.update(users).set({ favourites: userFavourites }).where(eq(users.id, user.id))
+    return res.status(200).send({
+      message: "Favourite added"
+    })
+  })
+
+  server.post("/removeFavourite", async(req : FastifyRequest <{Body: {favourite: string}}>, res) => {
+    // check for authentication and get user data from jwt in req
+    const user = await verifyUser(req, res, db)
+    const userFavourites : [string]= user.favourites as [string]
+    // remove favourite from user
+    await db.update(users).set({ favourites: userFavourites.filter(f => f !== req.body.favourite) }).where(eq(users.id, user.id))
+    return res.status(200).send({
+      message: "Favourite removed"
+    })
+  })
+
   done()
 }
 

@@ -7,6 +7,7 @@ import Animated, { FadeInLeft, FadeInUp } from "react-native-reanimated";
 import { Image } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
+import Config from "react-native-config";
 
 export type Media = streamingAvailability.Show &
 {
@@ -18,7 +19,9 @@ export type Media = streamingAvailability.Show &
     actors?: {
         name: string,
         imagePath: string
-    }[]
+    }[],
+    overview?: string,
+    tmdbId?: number
 }
 
 const {width, height} = Dimensions.get('window')
@@ -29,9 +32,10 @@ export default function Search({navigation} : {navigation: any}) {
     const [medias, setMedias] = React.useState<Media[]>([])
     const [title, setTitle] = React.useState("")
     const [isLoading, setIsLoading] = React.useState(false)
+    const [error, setError] = React .useState(false)
 
-    const RAPID_API_KEY = "34e6333532msh483d7ba656aab5ep19aad0jsn4e0c708ddd57";
-    const client = new streamingAvailability.DefaultApi(new streamingAvailability.Configuration({apiKey: RAPID_API_KEY}));
+    
+    const client = new streamingAvailability.DefaultApi(new streamingAvailability.Configuration({apiKey: Config.RAPID_API_KEY}));
 
     const country = "it";
 
@@ -49,7 +53,7 @@ export default function Search({navigation} : {navigation: any}) {
           });
         
           setMedias([]);
-          const filteredMedias = movies.result.filter((media) => media.streamingInfo[country] != null);
+          const filteredMedias = movies.result.filter((media) => media.streamingInfo[country] != undefined);
           for (let i = 0; i < filteredMedias.length; i++){
             try {
               const response = await axios.get("http://www.omdbapi.com/?i=" + filteredMedias[i].imdbId + "&apikey=f6ca6b5c");
@@ -62,21 +66,32 @@ export default function Search({navigation} : {navigation: any}) {
               let tmdbData : {
                 backdrop_path: string,
                 overview: string,
+                vote_average: number
               }
-                if(tmdbResponse.data.movie_results.length > 0){
-                    tmdbData = tmdbResponse.data.movie_results[0];
-                } else {
-                    tmdbData = tmdbResponse.data.tv_results[0];
-                }
-              console.log(tmdbData.overview)
+              if(tmdbResponse.data.movie_results.length > 0){
+                  tmdbData = tmdbResponse.data.movie_results[0];
+              } else {
+                  tmdbData = tmdbResponse.data.tv_results[0];
+              }
+              tmdbData.vote_average = Math.floor(tmdbData.vote_average / 2);
               setMedias((prevMedias) => [
                 ...prevMedias,
-                { ...filteredMedias[i], poster: data.Poster, score: Math.floor(Math.random() * 5) + 1, duration: parseInt(data.Runtime), actors: [], backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path, overview: tmdbData.overview}
+                { 
+                    ...filteredMedias[i],
+                    poster: data.Poster,
+                    score: tmdbData.vote_average,
+                    duration: parseInt(data.Runtime),
+                    actors: [],
+                    backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path,
+                    overview: tmdbData.overview,
+                    tmdbId: filteredMedias[i].tmdbId
+                }
               ]);
               
             } catch (error) {
               console.log("second request failed");
               console.error(error);
+              setError(true)
             }
           }
           
@@ -84,6 +99,7 @@ export default function Search({navigation} : {navigation: any}) {
         } catch (error) {
           console.log("first request failed");
           console.error(error);
+          setError(true)
         }
         
     }
@@ -117,7 +133,7 @@ export default function Search({navigation} : {navigation: any}) {
                 </View>
                 <TextInput
                     className = "w-5/6 text-neutral-800"
-                    placeholder="Search for a movie"
+                    placeholder="Search for a movie or a tv series"
                     placeholderTextColor={"gray"}
                     onChangeText={(text) => setTitle(text)}
                     onSubmitEditing={() => getMedias()}

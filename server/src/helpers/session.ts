@@ -21,7 +21,8 @@ export const verifyUser = async(req: FastifyRequest, res: FastifyReply, db: Node
   const [user] = await db.select({
     id: users.id,
     email: users.email,
-    username: users.username
+    username: users.username,
+    favourites: users.favourites
   }).from(users).where(eq(users.id, parseInt(id)))
 
   if (!user) {

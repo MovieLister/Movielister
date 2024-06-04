@@ -8,5 +8,5 @@
 ## Commands
 - `npm run watch` - Start the server in dev mode
 - `npm run build` - Build the server
-- `npm run generate` - generate pg migration using `./db/schema.ts`
+- `npm run migrate` - generate pg migration using `./db/schema.ts`
 - `npm run push` - push the last generated migration to the database
