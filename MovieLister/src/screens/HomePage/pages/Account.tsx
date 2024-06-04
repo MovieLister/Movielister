@@ -27,7 +27,6 @@ export default function Account({navigation} : {navigation: any}) {
     const [fieldToChange, setFieldToChange] = React.useState<FORMDATAFIELDS>()
 
     function getProfile() {
-        //TODO: Sostituire l'email con quella che verrà passata tramite sessione o jwt o quel che è 
         api.post("/users/getSelfUser").then((result: AxiosResponse) => {
             console.log("data:", result.data)
             setUser(result.data)
@@ -51,15 +50,6 @@ export default function Account({navigation} : {navigation: any}) {
                 setFormData({email: "", username: "", password: text})
                 break
         }
-    }
-
-    function changeUserData() {
-        //TODO: Sostituire l'email con quella che verrà passata tramite sessione o jwt o quel che è 
-        axios.post("http://192.168.116.8:3000/users/changeUsername", {email:"a", newUsername: formData.username, newPassword: formData.password, newEmail: formData.email}).then((result: AxiosResponse) => {
-            console.log(result.data)
-            setUser(result.data.user)
-            setModalVisible(false)
-        })
     }
 
     function logout() {

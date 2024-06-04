@@ -150,6 +150,8 @@ export default function Discover({navigation} : {navigation: any}) {
               setLoadingMedia("hidden")
               navigation.navigate("MediaDetail", {media: media})
         } catch (error) {
+            console.log("first request failed")
+            setLoadingMedia("hidden")
             console.error(error);
         }
     }

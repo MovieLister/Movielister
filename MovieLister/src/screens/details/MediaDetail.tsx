@@ -106,9 +106,9 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
             const actors = await axios.get("https://api.themoviedb.org/3/search/person?api_key=ea43a2cafc528f04d5518b96b1ac4ad2&query=" + actor)
             setMedia(prevMedia => ({
                 ...prevMedia,
-                actors: [...prevMedia.actors!, {name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"}]
+                actors: [...prevMedia.actors!, {name: actor, imagePath: actors.data.results[0]?.profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"}]
             }))
-            route.params.media.actors.push({name: actor, imagePath: actors.data.results[0].profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"})
+            route.params.media.actors.push({name: actor, imagePath: actors.data.results[0]?.profile_path? "https://image.tmdb.org/t/p/original" + actors.data.results[0].profile_path : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"})
         } catch (error){
             console.log(error)
         }
@@ -350,7 +350,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                     <View className="mt-1">
                         <Text className="text-gray-200 text-xl mx-4 font-bold">Episodes</Text>
                         <View style={{width: width * 0.33}} className="mx-4 my-1">
-                            {/* TODO: mettere a posto perche' non funziona lo scrolle dentro una webview */}
+                            {/* TODO: mettere a posto perche' non funziona lo scrolle dentro una ScrollView */}
                             <DropDownPicker
                                 items={seasonList}
                                 open={open}
