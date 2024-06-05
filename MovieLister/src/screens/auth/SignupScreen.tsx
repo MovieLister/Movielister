@@ -29,8 +29,8 @@ export default function SignupScreen({navigation} : {navigation: any}) {
             api.defaults.headers.common['Authorization'] = `Bearer ${result.data.data.jwt}`
             navigation.push('HomePage')
         })
-        .catch((error: AxiosError) => {
-            setErrorText((error.response?.data as { message?: string })?.message ?? "")
+        .catch((error: AxiosError<{error: string}>) => { 
+            setErrorText(error.response?.data.error ?? "")
             setErrorViewHidden("")
         })
     }

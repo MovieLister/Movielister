@@ -3,6 +3,7 @@ import Fastify from "fastify"
 import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts"
 import authRouter from "./routers/authRouter"
 import usersRouter from "./routers/usersRouter"
+import cinemasRouter from "./routers/cinemasRouter"
 import ExtendedError from "./helpers/ExtendedError"
 
 void (async () => {
@@ -31,6 +32,7 @@ void (async () => {
 
   server.register(authRouter, { prefix: "/auth" })
   server.register(usersRouter, { prefix: "/users" })
+  server.register(cinemasRouter, { prefix: "/cinemas" })
 
   server.listen({ port: process.env.API_PORT ? Number(process.env.API_PORT) : 3000, host: '0.0.0.0' }).catch((err) => {
     console.error(err)

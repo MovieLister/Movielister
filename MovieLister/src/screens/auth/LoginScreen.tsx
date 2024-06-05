@@ -19,8 +19,8 @@ export default function LoginScreen({navigation} : {navigation: any}) {
             api.defaults.headers.common['Authorization'] = `Bearer ${result.data.data.jwt}`
             navigation.push('HomePage')
         })
-        .catch((error: AxiosError) => { 
-            setErrorText((error.response?.data as { message?: string })?.message ?? "")
+        .catch((error: AxiosError<{error: string}>) => { 
+            setErrorText(error.response?.data.error ?? "")
             setErrorViewHidden("")
         })
     }
@@ -61,7 +61,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
                         />
                     </Animated.View>
                     <View className = {"flex-row items-center " + errorViewHidden} >
-                        <Text className = "text-red-500">{errorText}</Text>
+                        <Text className = "text-red-600 font-bold">{errorText}</Text>
                     </View>
                     <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} exiting={FadeOutDown.delay(300).duration(800)} className = "w-full">
                         <TouchableOpacity className = "bg-neutral-700 p-3 rounded-2xl"  onPress={() => handleLogin()}>

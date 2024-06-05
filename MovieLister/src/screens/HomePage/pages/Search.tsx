@@ -8,6 +8,7 @@ import { Image } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import Config from "react-native-config";
+import { release } from "os";
 
 export type Media = streamingAvailability.Show &
 {
@@ -21,7 +22,8 @@ export type Media = streamingAvailability.Show &
         imagePath: string
     }[],
     overview?: string,
-    tmdbId?: number
+    tmdbId?: number,
+    releaseDate?: string
 }
 
 const {width, height} = Dimensions.get('window')
@@ -66,7 +68,8 @@ export default function Search({navigation} : {navigation: any}) {
               let tmdbData : {
                 backdrop_path: string,
                 overview: string,
-                vote_average: number
+                vote_average: number,
+                release_date: string
               }
               if(tmdbResponse.data.movie_results.length > 0){
                   tmdbData = tmdbResponse.data.movie_results[0];
@@ -84,7 +87,8 @@ export default function Search({navigation} : {navigation: any}) {
                     actors: [],
                     backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path,
                     overview: tmdbData.overview,
-                    tmdbId: filteredMedias[i].tmdbId
+                    tmdbId: filteredMedias[i].tmdbId,
+                    releaseDate: tmdbData.release_date
                 }
               ]);
               
@@ -133,7 +137,7 @@ export default function Search({navigation} : {navigation: any}) {
                 </View>
                 <TextInput
                     className = "w-5/6 text-neutral-800"
-                    placeholder="Search for a movie or a tv series"
+                    placeholder="Search for movies or tv series"
                     placeholderTextColor={"gray"}
                     onChangeText={(text) => setTitle(text)}
                     onSubmitEditing={() => getMedias()}
@@ -168,7 +172,7 @@ export default function Search({navigation} : {navigation: any}) {
                                                         return (
                                                             <Icon
                                                                 key={i}
-                                                                name={i < media.score ? "star" : "star-o"}
+                                                                name={i < media.score! ? "star" : "star-o"}
                                                                 size={13}
                                                                 color= "orange"
                                                             />

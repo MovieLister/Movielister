@@ -162,6 +162,7 @@ export default function Discover({navigation} : {navigation: any}) {
         getActualUser().then((user) => {
             GetSimilarFavourites(user.favourites)
         })
+        console.log("called")
     }, [])
     
     return (

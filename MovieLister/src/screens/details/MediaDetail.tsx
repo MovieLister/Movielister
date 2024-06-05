@@ -15,6 +15,7 @@ import DropDownPicker from "react-native-dropdown-picker"
 import { act } from "react-test-renderer"
 import { api } from "../../helpers/api"
 import { UserFront } from "../../../../server/src/db/schema"
+import { release } from "os"
 
 const {width, height} = Dimensions.get('window')
 
@@ -47,6 +48,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
     const [seasonList, setSeasonList] = React.useState<SeasonList[]>([])
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(0);
+    const [inCinema, setInCinema] = React.useState<boolean>()
     const called = React.useRef(false)
     const country = "it"
 
@@ -216,6 +218,17 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
             }))
             removeEpisodesStreamingDuplicates()
         }
+        else{
+            if(media.releaseDate){
+                const releaseDate = new Date(media.releaseDate)
+                const currentDate = new Date()
+                console.log(releaseDate)
+                if((currentDate.getTime() - releaseDate.getTime()) < 120 * 24 * 60 * 60 * 1000){
+                    setInCinema(true)
+                }
+                
+            }
+        }
     }, [])
 
     useEffect(() => {
@@ -225,8 +238,8 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
     }, [actualSeasonNumber])
 
     return (
-        <View className = "bg-neutral-900 flex pb-1 min-h-full">
-            <SafeAreaView className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
+        <SafeAreaView className = "bg-neutral-900 flex pb-1 min-h-full">
+            <View className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
                 <TouchableOpacity className = "rounded-xl p-1" onPress={() => navigation.goBack()}>
                     <Icon
                         name="arrow-left"
@@ -244,7 +257,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                         size={25}
                     />
                 </TouchableOpacity>
-            </SafeAreaView>
+            </View>
             <ScrollView nestedScrollEnabled={true}>
                 <View className = "w-full">
                     <View className="rounded-xl bg-neutral-900">
@@ -289,7 +302,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                                     return (
                                         <Icon
                                             key={i}
-                                            name={i < media.score ? "star" : "star-o"}
+                                            name={i < media.score! ? "star" : "star-o"}
                                             size={18}
                                             color= "orange"
                                         />
@@ -312,19 +325,27 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                                 </Text>
                             ) : null
                         }
-                        
-                        {streamingServicesVisible && (
-                            <View className="flex flex-row">
-                                {
-                                    media.streamingInfo[country]?.map((streaming, index) => {
-                                        return (
-                                            <LinkIcon key={index} href={streaming.link} service={streaming.service as StreamingServices} />
-                                        )
-                                    })
-                                }
-                            </View>
-                        
-                        )}
+                        <View className="flex flex-row justify-between">
+                            {streamingServicesVisible && (
+                                <View className="flex flex-row">
+                                    {
+                                        media.streamingInfo[country]?.map((streaming, index) => {
+                                            return (
+                                                <LinkIcon key={index} href={streaming.link} service={streaming.service as StreamingServices} />
+                                            )
+                                        })
+                                    }
+                                </View>
+                            
+                            )}
+                            { inCinema ? (
+                                <View>
+                                    <TouchableOpacity className="p-1" onPress={() => { navigation.navigate("MapDetail", {media: media})}}>
+                                        <Icon name="map" size={height/30} color="orange"/>
+                                    </TouchableOpacity>
+                                </View>
+                            ) : null}
+                        </View>
                         
                     </View>
                 </View>
@@ -350,7 +371,6 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                     <View className="mt-1">
                         <Text className="text-gray-200 text-xl mx-4 font-bold">Episodes</Text>
                         <View style={{width: width * 0.33}} className="mx-4 my-1">
-                            {/* TODO: mettere a posto perche' non funziona lo scrolle dentro una ScrollView */}
                             <DropDownPicker
                                 items={seasonList}
                                 open={open}
@@ -366,6 +386,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                                     }
                                 }}
                                 theme="DARK"
+                                listMode="SCROLLVIEW"
                             />
                         </View>
                         <View className="items-center">
@@ -405,7 +426,7 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
                 ) : null}
                 
             </ScrollView>
-        </View>
+        </SafeAreaView>
 
     )
 }

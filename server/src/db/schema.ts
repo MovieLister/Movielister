@@ -8,6 +8,14 @@ export const users = pgTable("Users", {
   favourites: json("favourites").default([]),
 });
 
+export const cinemas = pgTable("Cinemas", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  latitude: text("latitude").notNull(),
+  longitude: text("longitude").notNull(),
+});
+
 
 export type User = typeof users.$inferSelect
 export type UserFront = Pick<User, "id" | "username" | "email" | "favourites">
+export type Cinema = typeof cinemas.$inferSelect

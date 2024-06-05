@@ -59,7 +59,7 @@ const TabButton = (props: any) => {
                 <Icon
                     name={tab.activeIcon}
                     size={24}
-                    color={focused ? "orange" : undefined} //TODO: Da cambiare il colore dell'inattiva
+                    color={focused ? "orange" : undefined}
                 />
             </Animatable.View>
 

@@ -7,8 +7,6 @@ import { and, eq } from "drizzle-orm";
 import { createUserJwt } from "../helpers/session";
 import ExtendedError from "../helpers/ExtendedError";
 
-//TODO: NON INVIA GLI ERRRORI CORRETTAMENTE
-
 const router: FastifyPluginCallback = async (server, _, done) => {
   const client = new Client({
     connectionString: process.env.PG_CONNECTION_STRING
