@@ -8,6 +8,7 @@ import {User} from "../../../../../server/src/db/schema";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../../../helpers/api";
 import { AxiosError } from "axios";
+import notifee from '@notifee/react-native';
 
 enum FORMDATAFIELDS {
     EMAIL = "Email",
@@ -56,6 +57,27 @@ export default function Account({navigation} : {navigation: any}) {
         api.defaults.headers.common['Authorization'] = ""
         navigation.push("Login")
     }
+
+    async function onCreateTriggerNotification() {
+        // Request permissions (required for iOS)
+        await notifee.requestPermission()
+
+        const channelId = await notifee.createChannel({
+          id: 'default',
+          name: 'Default Channel',
+        });
+    
+        await notifee.displayNotification({
+          title: 'Notification Title',
+          body: 'Main body content of the notification',
+          android: {
+            channelId,
+            pressAction: {
+              id: 'default',
+            },
+          },
+        });
+      }
 
     useEffect(() => {
         getProfile()
@@ -107,6 +129,7 @@ export default function Account({navigation} : {navigation: any}) {
                         />
                     </Animated.View>
                 </View>
+                <Button onPress={() => onCreateTriggerNotification()}></Button>
         </View>
     )
 }
