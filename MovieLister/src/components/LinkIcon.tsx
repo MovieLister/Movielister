@@ -16,7 +16,7 @@ export enum StreamingServices {
   apple = "apple"
 }
 
-const streamingServices = {
+export const streamingServices = {
     "prime": "primevideo://open?url=",
     "netflix": "nflx://",
     "disney": "disneyplus://",
@@ -29,7 +29,7 @@ const {width, height} = Dimensions.get('window')
 
 export default function LinkIcon({ href, service } : LinkIconProps) {
     const handleClick = () => {
-        const streamingPrefix : string = streamingServices[service];4
+        const streamingPrefix : string = streamingServices[service];
         if(service === StreamingServices.prime){
           Linking.canOpenURL(streamingPrefix + href).then(supported => {
             if (supported) {

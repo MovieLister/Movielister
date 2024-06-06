@@ -7,45 +7,86 @@ import HomePage from './src/screens/HomePage/HomePage'
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import MediaDetail from "./src/screens/details/MediaDetail"
 import MapDetail from "./src/screens/details/MapDetail"
-import notifee, { IntervalTrigger, RepeatFrequency, TimeUnit, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import notifee, { AlarmType, AndroidImportance, AndroidNotificationSetting, AndroidStyle, IntervalTrigger, RepeatFrequency, TimeUnit, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import axios from "axios"
+import { ShowTypeEnum } from "streaming-availability"
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
+  const country = 'it'
   async function onCreateTriggerNotification() {
-    const date = new Date(Date.now());
-    date.setHours(22);
-    date.setMinutes(12);
-    // Request permissions (required for iOS)
-    await notifee.requestPermission()
-
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
-
-    const trigger: IntervalTrigger = {
-      type: TriggerType.INTERVAL,
-      interval: 15,
-      timeUnit: TimeUnit.MINUTES
+    const options = {
+      method: 'GET',
+      url: 'https://streaming-availability.p.rapidapi.com/changes',
+      params: {
+        change_type: 'new',
+        country: 'it',
+        item_type: 'show',
+        order_direction: 'desc',
+        include_unknown_dates: 'false'
+      },
+      headers: {
+        'x-rapidapi-key': '00335950ecmsh0c373d4417ca653p11b8edjsnccc5ede19f67',
+        'x-rapidapi-host': 'streaming-availability.p.rapidapi.com'
+      }
     };
 
-    await notifee.createTriggerNotification(
-      {
-        id: '1234',
-        title: 'Notification made with interval trigger',
-        body: 'INTERVAL',
-        android: {
-          channelId: 'default',
-          lightUpScreen: true,
-          timestamp: new Date().getTime(),
-          showTimestamp: true,
-        },
+    try {
+      const response = await axios.request(options);
+      let showId = response.data.changes[0].showId
+      for (let i = 0; i < response.data.changes.length; i++) {
+        if (response.data.changes[i].changeType === "new" && response.data.shows[response.data.changes[i].showId].streamingOptions[country] !== undefined) {
+          showId = response.data.changes[i].showId
+          break
         
-      },
-      trigger,
-      
-    );
+        }
+      }
+      const shows = response.data.shows
+      const showTitle : string = shows[showId].showType === ShowTypeEnum.Movie ? shows[showId].title : shows[showId].name
+      const date = new Date(Date.now());
+      date.setTime(date.getTime() + 5000);
+      // Request permissions (required for iOS)
+      await notifee.requestPermission()
+
+      const channelId = await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH
+      });
+
+      const trigger:TimestampTrigger = {
+        type: TriggerType.TIMESTAMP,
+        timestamp: date.getTime()
+      };
+
+      await notifee.createTriggerNotification(
+        {
+          id: '1234',
+          title: "New Release! - " + showTitle,
+          body: 'New ' + shows[showId].showType + ' available on streaming platforms',
+          android: {
+            channelId: 'default',
+            lightUpScreen: true,
+            timestamp: date.getTime(),
+            showTimestamp: true,
+            style: {
+              type: AndroidStyle.BIGPICTURE,
+              picture: shows[showId].imageSet.horizontalBackdrop.w1080,
+            },
+          },
+          data: {
+            link: shows[showId].streamingOptions[country][0].link,
+            service: shows[showId].streamingOptions[country][0].service.id
+          },
+        },
+        trigger,
+        
+      );
+      } catch (error) {
+      console.error(error);
+    }
+
 
   }
 

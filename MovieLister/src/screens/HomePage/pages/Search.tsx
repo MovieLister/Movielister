@@ -53,6 +53,7 @@ export default function Search({navigation} : {navigation: any}) {
             country: country,
             showType: streamingAvailability.SearchByFiltersShowTypeEnum.All
           });
+          console.log(movies.result)
         
           setMedias([]);
           const filteredMedias = movies.result.filter((media) => media.streamingInfo[country] != undefined);
@@ -94,7 +95,6 @@ export default function Search({navigation} : {navigation: any}) {
               
             } catch (error) {
               console.log("second request failed");
-              console.error(error);
               setError(true)
             }
           }

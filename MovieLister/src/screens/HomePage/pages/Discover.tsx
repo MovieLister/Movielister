@@ -93,10 +93,10 @@ export default function Discover({navigation} : {navigation: any}) {
         let searchId : string
         setLoadingMedia("")
         if(favourite.type === "Movie"){
-            searchId = "movie/" + favourite.id
+            searchId = "movie/" + "37476"
         }
         else{
-            searchId = "tv/" + favourite.id
+            searchId = "tv/" + "37476"
         }
         const options = {
             method: 'GET',
@@ -125,6 +125,7 @@ export default function Discover({navigation} : {navigation: any}) {
                   backdrop_path: string,
                   overview: string,
                   vote_average: number
+                  release_date: string
                 }
                 if(tmdbResponse.data.movie_results.length > 0){
                     tmdbData = tmdbResponse.data.movie_results[0];
@@ -140,7 +141,8 @@ export default function Discover({navigation} : {navigation: any}) {
                     actors: [],
                     backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path,
                     overview: tmdbData.overview,
-                    tmdbId: media.tmdbId
+                    tmdbId: media.tmdbId,
+                    releaseDate: tmdbData.release_date
                 }
                 
               } catch (error) {

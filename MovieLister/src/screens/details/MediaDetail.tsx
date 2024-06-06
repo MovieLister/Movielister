@@ -237,6 +237,10 @@ export default function MediaDetail({route, navigation} : {route: any, navigatio
         }
     }, [actualSeasonNumber])
 
+    useEffect(() => {
+        console.log(media)
+    }, [media])
+
     return (
         <SafeAreaView className = "bg-neutral-900 flex pb-1 min-h-full">
             <View className = "absolute z-20 w-full flex-row justify-between items-center px-4 mt-3">
