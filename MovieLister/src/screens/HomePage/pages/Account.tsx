@@ -58,27 +58,6 @@ export default function Account({navigation} : {navigation: any}) {
         navigation.push("Login")
     }
 
-    async function onCreateTriggerNotification() {
-        // Request permissions (required for iOS)
-        await notifee.requestPermission()
-
-        const channelId = await notifee.createChannel({
-          id: 'default',
-          name: 'Default Channel',
-        });
-    
-        await notifee.displayNotification({
-          title: 'Notification Title',
-          body: 'Main body content of the notification',
-          android: {
-            channelId,
-            pressAction: {
-              id: 'default',
-            },
-          },
-        });
-      }
-
     useEffect(() => {
         getProfile()
     }, [])
@@ -129,7 +108,6 @@ export default function Account({navigation} : {navigation: any}) {
                         />
                     </Animated.View>
                 </View>
-                <Button onPress={() => onCreateTriggerNotification()}></Button>
         </View>
     )
 }

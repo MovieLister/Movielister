@@ -49,7 +49,7 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
             include_unknown_dates: 'false'
           },
           headers: {
-            'x-rapidapi-key': '00335950ecmsh0c373d4417ca653p11b8edjsnccc5ede19f67',
+            'x-rapidapi-key': '1edb3aea8bmshaf3eabdf8f009bap107548jsnddf86dec83ae',
             'x-rapidapi-host': 'streaming-availability.p.rapidapi.com'
           }
         };
@@ -76,6 +76,10 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
             timestamp: date.getTime(),
           };
 
+          let bigPictureImage = shows[showId].imageSet.horizontalBackdrop?.w1080
+          if(bigPictureImage == undefined)
+            bigPictureImage = require("./assets/placeholder.jpg")
+
         await notifee.createTriggerNotification({
             id: '1234',
             title: "New Release! - " + showTitle,
@@ -87,7 +91,7 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
               showTimestamp: true,
               style: {
                 type: AndroidStyle.BIGPICTURE,
-                picture: shows[showId].imageSet.horizontalBackdrop.w1080,
+                picture: bigPictureImage,
               },
             },
             data: {
@@ -139,7 +143,7 @@ notifee.onForegroundEvent(async ({type, detail}) => {
           include_unknown_dates: 'false'
         },
         headers: {
-          'x-rapidapi-key': '00335950ecmsh0c373d4417ca653p11b8edjsnccc5ede19f67',
+          'x-rapidapi-key': '1edb3aea8bmshaf3eabdf8f009bap107548jsnddf86dec83ae',
           'x-rapidapi-host': 'streaming-availability.p.rapidapi.com'
         }
       };
@@ -165,6 +169,10 @@ notifee.onForegroundEvent(async ({type, detail}) => {
           type: TriggerType.TIMESTAMP,
           timestamp: date.getTime(),
         };
+      
+      let bigPictureImage = shows[showId].imageSet.horizontalBackdrop?.w1080
+      if(bigPictureImage == undefined)
+        bigPictureImage = require("./assets/placeholder.jpg")
 
       await notifee.createTriggerNotification({
           id: '1234',
@@ -177,7 +185,7 @@ notifee.onForegroundEvent(async ({type, detail}) => {
             showTimestamp: true,
             style: {
               type: AndroidStyle.BIGPICTURE,
-              picture: shows[showId].imageSet.horizontalBackdrop.w1080,
+              picture: bigPictureImage,
             },
           },
           data: {

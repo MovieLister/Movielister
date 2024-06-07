@@ -27,7 +27,7 @@ function App(): React.JSX.Element {
         include_unknown_dates: 'false'
       },
       headers: {
-        'x-rapidapi-key': '00335950ecmsh0c373d4417ca653p11b8edjsnccc5ede19f67',
+        'x-rapidapi-key': '1edb3aea8bmshaf3eabdf8f009bap107548jsnddf86dec83ae',
         'x-rapidapi-host': 'streaming-availability.p.rapidapi.com'
       }
     };
@@ -60,6 +60,10 @@ function App(): React.JSX.Element {
         timestamp: date.getTime()
       };
 
+      let bigPictureImage = shows[showId].imageSet.horizontalBackdrop?.w1080
+      if(bigPictureImage == undefined)
+        bigPictureImage = require("./assets/placeholder.jpg")
+
       await notifee.createTriggerNotification(
         {
           id: '1234',
@@ -72,7 +76,7 @@ function App(): React.JSX.Element {
             showTimestamp: true,
             style: {
               type: AndroidStyle.BIGPICTURE,
-              picture: shows[showId].imageSet.horizontalBackdrop.w1080,
+              picture: bigPictureImage,
             },
           },
           data: {
@@ -98,7 +102,7 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='HomePage' screenOptions={{headerShown: false, animation: 'none'}}>
+        <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false, animation: 'none'}}>
           <Stack.Screen name="Login" component={loginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="HomePage" component={HomePage} />
