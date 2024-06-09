@@ -10,8 +10,6 @@ const router: FastifyPluginCallback = async (server, _, done) => {
     connectionString: process.env.PG_CONNECTION_STRING
   });
 
-  
-
   server.post("/getCinemas", async(req, res) => {
     await client.connect();
     const db = drizzle(client);

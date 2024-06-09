@@ -23,11 +23,11 @@ export default function Discover({navigation} : {navigation: any}) {
         try{
             const user = await api.post("/users/getSelfUser")
             setUser(user.data)
-            console.log(user.data)
+            console.log("USER POST: ", user)
             return user.data
         }
         catch(error){
-            console.log(error)
+            console.log(JSON.stringify(error))
         }
     }
 
@@ -162,6 +162,7 @@ export default function Discover({navigation} : {navigation: any}) {
         if(called.current) return
         called.current = true
         getActualUser().then((user) => {
+            console.log(user)
             GetSimilarFavourites(user.favourites)
         })
     }, [])

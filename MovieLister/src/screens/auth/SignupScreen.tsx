@@ -87,7 +87,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                             onChangeText={(text) => setFormData({...formData, confirmPassword: text})}
                         />
                     </Animated.View>
-                    <View className = {"flex-row items-center bg-white " + errorViewHidden} >
+                    <View className = {"flex-row items-center " + errorViewHidden} >
                         <Text className = "text-red-600 font-bold">{errorText}</Text>
                     </View>
                     <Animated.View entering={FadeInDown.delay(500).duration(800).springify()} className = "w-full">
