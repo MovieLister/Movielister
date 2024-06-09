@@ -13,7 +13,8 @@ export enum StreamingServices {
   disney = "disney",
   hulu = "hulu",
   now = "now",
-  apple = "apple"
+  apple = "apple",
+  paramount = "paramount"
 }
 
 export const streamingServices = {
@@ -22,7 +23,8 @@ export const streamingServices = {
     "disney": "disneyplus://",
     "hulu": "hulu:/",
     "now": "now://",
-    "apple": "apple:/"
+    "apple": "apple:/",
+    "paramount": "paramount://"
 }
 
 const {width, height} = Dimensions.get('window')
@@ -64,6 +66,8 @@ export default function LinkIcon({ href, service } : LinkIconProps) {
           return <Image style={{aspectRatio:1, height:height/22}} className = "rounded-xl mr-2" source={require("../../assets/now.jpg")}  />
         case StreamingServices.apple:
           return <Image style={{aspectRatio:1, height:height/22}} className = "rounded-xl mr-2" source={require("../../assets/apple.png")}  />
+        case StreamingServices.paramount:
+          return <Image style={{aspectRatio:1, height:height/22}} className = "rounded-xl mr-2" source={require("../../assets/paramount.png")}  />
       }
     }
     

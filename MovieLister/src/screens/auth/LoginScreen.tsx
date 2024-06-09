@@ -3,9 +3,6 @@ import React from 'react'
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { api } from "../../helpers/api"
-import Config from 'react-native-config';
-import notifee, { AlarmType, AndroidImportance, AndroidNotificationSetting, AndroidStyle, IntervalTrigger, RepeatFrequency, TimeUnit, TimestampTrigger, TriggerType } from '@notifee/react-native';
-import { ShowTypeEnum } from 'streaming-availability';
 
 
 export default function LoginScreen({navigation} : {navigation: any}) {

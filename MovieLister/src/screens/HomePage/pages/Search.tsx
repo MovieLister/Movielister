@@ -35,6 +35,7 @@ export default function Search({navigation} : {navigation: any}) {
     const [title, setTitle] = React.useState("")
     const [isLoading, setIsLoading] = React.useState(false)
     const [error, setError] = React .useState(false)
+    const [errorMessage, setErrorMessage] = React.useState("")
 
     
     const client = new streamingAvailability.DefaultApi(new streamingAvailability.Configuration({apiKey: Config.RAPID_API_KEY}));
@@ -55,11 +56,11 @@ export default function Search({navigation} : {navigation: any}) {
           });
           console.log(movies.result)
         
-          setMedias([]);
           const filteredMedias = movies.result.filter((media) => media.streamingInfo[country] != undefined);
+          const newMedias : Media[] = [];
           for (let i = 0; i < filteredMedias.length; i++){
             try {
-              const response = await axios.get("http://www.omdbapi.com/?i=" + filteredMedias[i].imdbId + "&apikey=f6ca6b5c");
+              const response = await axios.get("https://www.omdbapi.com/?i=" + filteredMedias[i].imdbId + "&apikey=f6ca6b5c");
               const data : {
                 Poster: string,
                 Runtime: string,
@@ -78,32 +79,32 @@ export default function Search({navigation} : {navigation: any}) {
                   tmdbData = tmdbResponse.data.tv_results[0];
               }
               tmdbData.vote_average = Math.floor(tmdbData.vote_average / 2);
-              setMedias((prevMedias) => [
-                ...prevMedias,
-                { 
-                    ...filteredMedias[i],
-                    poster: data.Poster,
-                    score: tmdbData.vote_average,
-                    duration: parseInt(data.Runtime),
-                    actors: [],
-                    backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path,
-                    overview: tmdbData.overview,
-                    tmdbId: filteredMedias[i].tmdbId,
-                    releaseDate: tmdbData.release_date
-                }
-              ]);
+              newMedias.push({
+                ...filteredMedias[i],
+                poster: data.Poster,
+                score: tmdbData.vote_average,
+                duration: parseInt(data.Runtime),
+                actors: [],
+                backdrop: "https://image.tmdb.org/t/p/original" + tmdbData.backdrop_path,
+                overview: tmdbData.overview,
+                tmdbId: filteredMedias[i].tmdbId,
+                releaseDate: tmdbData.release_date
+              })
               
             } catch (error) {
               console.log("second request failed");
               setError(true)
+              setErrorMessage(JSON.stringify(error))
             }
           }
+        setMedias(newMedias);
           
           setIsLoading(false);
         } catch (error) {
           console.log("first request failed");
           console.error(error);
           setError(true)
+          setErrorMessage(JSON.stringify(error))
         }
         
     }
@@ -187,6 +188,7 @@ export default function Search({navigation} : {navigation: any}) {
                         </View>
                     )}
                 </View>
+                <Text>{errorMessage}</Text>
             </ScrollView>
         </View>
     )

@@ -114,7 +114,7 @@ export default function Discover({navigation} : {navigation: any}) {
             console.log(response.data.result);
             media = response.data.result
             try {
-                const response = await axios.get("http://www.omdbapi.com/?i=" + media.imdbId + "&apikey=f6ca6b5c");
+                const response = await axios.get("https://www.omdbapi.com/?i=" + media.imdbId + "&apikey=f6ca6b5c");
                 const data : {
                   Poster: string,
                   Runtime: string,
