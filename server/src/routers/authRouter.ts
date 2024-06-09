@@ -6,18 +6,14 @@ import { users } from "../db/schema"
 import { and, eq } from "drizzle-orm";
 import { createUserJwt } from "../helpers/session";
 import ExtendedError from "../helpers/ExtendedError";
+import { pool } from "../helpers/pool";
 
 const router: FastifyPluginCallback = async (server, _, done) => {
-  const client = new Client({
-    connectionString: process.env.PG_CONNECTION_STRING
-  });
-
   
 
   // logout with JWT is done client side so we do not need it here
   server.post("/login", async(req : FastifyRequest <{Body: {email: string, password: string}}>, res) => {
-    await client.connect();
-    const db = drizzle(client);
+    const db = drizzle(pool);
     const [user] = await db
         .select()
         .from(users)
@@ -31,7 +27,6 @@ const router: FastifyPluginCallback = async (server, _, done) => {
       if(!user) {
         throw new ExtendedError(400, "Invalid email or password")
       }
-      client.end()
 
       return res.status(200).send({
         message: "OK",
@@ -42,8 +37,7 @@ const router: FastifyPluginCallback = async (server, _, done) => {
   })
 
   server.post("/register", async(req : FastifyRequest <{Body: {username: string, email: string, password: string, confirmPassword: string}}>, res) => {
-    await client.connect();
-    const db = drizzle(client);
+    const db = drizzle(pool);
     const user = await db.select().from(users).where(eq(users.email, req.body.email))
       if (user.length > 0) {
         throw new ExtendedError(400, "This email is already used")
@@ -54,7 +48,6 @@ const router: FastifyPluginCallback = async (server, _, done) => {
         email: req.body.email,
         password: req.body.password
       }).returning()
-      client.end()
 
       return res.status(200).send({
         message: "User registered",

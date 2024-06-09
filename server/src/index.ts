@@ -18,6 +18,7 @@ void (async () => {
 
 
   server.setErrorHandler((error, request, reply) => {
+    console.log(JSON.stringify(error))
     if (error instanceof ExtendedError) {
       return reply.status(error.errorCode).send({ error: error.message })
     }
@@ -34,7 +35,7 @@ void (async () => {
   server.register(usersRouter, { prefix: "/users" })
   server.register(cinemasRouter, { prefix: "/cinemas" })
 
-  server.listen({ port: process.env.API_PORT ? Number(process.env.API_PORT) : 3000, host: '0.0.0.0' }).catch((err) => {
+  server.listen({ port: process.env.API_PORT ? Number(process.env.API_PORT) : 8000, host: '0.0.0.0' }).catch((err) => {
     console.error(err)
     process.exit(1)
   })
