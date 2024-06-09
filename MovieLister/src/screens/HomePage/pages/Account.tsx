@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../../../helpers/api";
 import { AxiosError } from "axios";
 import notifee from '@notifee/react-native';
+import { StackActions } from "@react-navigation/native";
 
 enum FORMDATAFIELDS {
     EMAIL = "Email",
@@ -55,7 +56,7 @@ export default function Account({navigation} : {navigation: any}) {
 
     function logout() {
         api.defaults.headers.common['Authorization'] = ""
-        navigation.push("Login")
+        navigation.dispatch(StackActions.popToTop())
     }
 
     useEffect(() => {

@@ -93,10 +93,10 @@ export default function Discover({navigation} : {navigation: any}) {
         let searchId : string
         setLoadingMedia("")
         if(favourite.type === "Movie"){
-            searchId = "movie/" + "37476"
+            searchId = "movie/" + favourite.id
         }
         else{
-            searchId = "tv/" + "37476"
+            searchId = "tv/" + favourite.id
         }
         const options = {
             method: 'GET',
@@ -164,7 +164,6 @@ export default function Discover({navigation} : {navigation: any}) {
         getActualUser().then((user) => {
             GetSimilarFavourites(user.favourites)
         })
-        console.log("called")
     }, [])
     
     return (

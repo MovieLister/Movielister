@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { PermissionsAndroid, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import React, { useEffect } from 'react';
@@ -21,9 +21,27 @@ export default function MapDetail({ route, navigation }: { route: any, navigatio
     }
 
     useEffect(() => {
-        Geolocation.getCurrentPosition(info => {
-            setLocation(info.coords);
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((granted) => {
+            if(granted){
+                Geolocation.getCurrentPosition(info => {
+                    setLocation(info.coords);
+                });
+            }
+            else{
+                setLocation({
+                    latitude: 37.78825,
+                    longitude: -122.4324,
+                    accuracy: 0,
+                    altitude: 0,
+                    heading: 0,
+                    speed: 0,
+                    altitudeAccuracy: 0
+                });
+            }
+        }).catch((err) => {
+            console.log(err);
         });
+        
         loadCinemas()
     }, []);
 

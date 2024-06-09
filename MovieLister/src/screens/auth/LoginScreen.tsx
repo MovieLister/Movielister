@@ -1,9 +1,12 @@
 import { View, Text, TextInput, TouchableOpacity, StatusBar } from 'react-native'
 import React from 'react'
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
-import { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { api } from "../../helpers/api"
 import Config from 'react-native-config';
+import notifee, { AlarmType, AndroidImportance, AndroidNotificationSetting, AndroidStyle, IntervalTrigger, RepeatFrequency, TimeUnit, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import { ShowTypeEnum } from 'streaming-availability';
+
 
 export default function LoginScreen({navigation} : {navigation: any}) {
     const [formData, setFormData] = React.useState({
@@ -28,7 +31,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
     return (
         <View className="bg-white h-full w-full">
             <StatusBar hidden />
-            <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background2.jpg')} />
+            <Animated.Image className = "h-full w-full absolute" source={require('../../../assets/background2.jpg')}/>
 
             {/* Title and form */}
             <Animated.View className = "h-full w-full flex justify-around pb-10">
@@ -46,7 +49,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
                     <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} className = "bg-black/40 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Email'
-                            placeholderTextColor={'black'}
+                            placeholderTextColor={'white'}
                             value={formData.email}
                             onChangeText={(text) => {setFormData({...formData, email: text})}}
                         />
@@ -54,7 +57,7 @@ export default function LoginScreen({navigation} : {navigation: any}) {
                     <Animated.View entering={FadeInDown.delay(200).duration(800).springify()}  className = "bg-black/40 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Password'
-                            placeholderTextColor={'black'}
+                            placeholderTextColor={'white'}
                             secureTextEntry
                             value={formData.password}
                             onChangeText={(text) => {setFormData({...formData, password: text})}}

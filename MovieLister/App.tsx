@@ -45,9 +45,9 @@ function App(): React.JSX.Element {
       const shows = response.data.shows
       const showTitle : string = shows[showId].showType === ShowTypeEnum.Movie ? shows[showId].title : shows[showId].name
       const date = new Date(Date.now());
-      date.setTime(date.getTime() + 5000);
+      date.setTime(date.getTime() + 60000 * 60 * 24);
       // Request permissions (required for iOS)
-      await notifee.requestPermission()
+      notifee.requestPermission()
 
       const channelId = await notifee.createChannel({
         id: 'default',
@@ -90,8 +90,6 @@ function App(): React.JSX.Element {
       } catch (error) {
       console.error(error);
     }
-
-
   }
 
   useEffect(() => {

@@ -55,7 +55,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                     <Animated.View entering={FadeInDown.delay(100).duration(800).springify()} className = "bg-black/40 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Username'
-                            placeholderTextColor={'black'}
+                            placeholderTextColor={'white'}
                             value={formData.username}
                             onChangeText={(text) => setFormData({...formData, username: text})}
 
@@ -64,7 +64,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                     <Animated.View entering={FadeInDown.delay(200).duration(800).springify()} className = "bg-black/40 p-2 rounded-2xl w-full">
                         <TextInput
                             placeholder='Email'
-                            placeholderTextColor={'black'}
+                            placeholderTextColor={'white'}
                             value={formData.email}
                             onChangeText={(text) => setFormData({...formData, email: text})}
                         />
@@ -72,7 +72,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                     <Animated.View entering={FadeInDown.delay(300).duration(800).springify()} className = "bg-black/40 p-2 rounded-2xl w-full ">
                         <TextInput
                             placeholder='Password'
-                            placeholderTextColor={'black'}
+                            placeholderTextColor={'white'}
                             secureTextEntry
                             value={formData.password}
                             onChangeText={(text) => setFormData({...formData, password: text})}
@@ -81,7 +81,7 @@ export default function SignupScreen({navigation} : {navigation: any}) {
                     <Animated.View entering={FadeInDown.delay(400).duration(800).springify()} className = "bg-black/40 p-2 rounded-2xl w-full ">
                         <TextInput
                             placeholder='Confirm password'
-                            placeholderTextColor={'black'}
+                            placeholderTextColor={'white'}
                             secureTextEntry
                             value={formData.confirmPassword}
                             onChangeText={(text) => setFormData({...formData, confirmPassword: text})}

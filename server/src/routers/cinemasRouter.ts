@@ -10,11 +10,13 @@ const router: FastifyPluginCallback = async (server, _, done) => {
     connectionString: process.env.PG_CONNECTION_STRING
   });
 
-  await client.connect();
-  const db = drizzle(client);
+  
 
   server.post("/getCinemas", async(req, res) => {
+    await client.connect();
+    const db = drizzle(client);
     const cinemasList : Cinema[] = await db.select().from(cinemas)
+    client.end()
     return res.status(200).send(cinemasList)
   })
 

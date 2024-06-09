@@ -66,8 +66,7 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
         }
         const shows = response.data.shows
         const showTitle = shows[showId].showType === ShowTypeEnum.Movie ? shows[showId].title : shows[showId].name
-        const date = new Date(Date.now() + 60000 * 60);
-        console.log("SECONDA CHIAMATA FATTA")
+        const date = new Date(Date.now() + 60000 * 60 * 24);
         // Request permissions (required for iOS)
         notifee.requestPermission()
 
@@ -80,7 +79,7 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
           if(bigPictureImage == undefined)
             bigPictureImage = require("./assets/placeholder.jpg")
 
-        await notifee.createTriggerNotification({
+        notifee.createTriggerNotification({
             id: '1234',
             title: "New Release! - " + showTitle,
             body: 'New ' + shows[showId].showType + ' available on streaming platforms',
@@ -160,8 +159,7 @@ notifee.onForegroundEvent(async ({type, detail}) => {
       }
       const shows = response.data.shows
       const showTitle = shows[showId].showType === ShowTypeEnum.Movie ? shows[showId].title : shows[showId].name
-      const date = new Date(Date.now() + 60000 * 60);
-      console.log("SECONDA CHIAMATA FATTA")
+      const date = new Date(Date.now() + 60000 * 60 * 24);
       // Request permissions (required for iOS)
       notifee.requestPermission()
 

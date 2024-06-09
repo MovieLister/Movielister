@@ -12,12 +12,12 @@ const router: FastifyPluginCallback = async (server, _, done) => {
     connectionString: process.env.PG_CONNECTION_STRING
   });
 
-  await client.connect();
-  const db = drizzle(client);
+  
 
   // logout with JWT is done client side so we do not need it here
   server.post("/login", async(req : FastifyRequest <{Body: {email: string, password: string}}>, res) => {
-    console.log("ciao")
+    await client.connect();
+    const db = drizzle(client);
     const [user] = await db
         .select()
         .from(users)
@@ -31,6 +31,7 @@ const router: FastifyPluginCallback = async (server, _, done) => {
       if(!user) {
         throw new ExtendedError(400, "Invalid email or password")
       }
+      client.end()
 
       return res.status(200).send({
         message: "OK",
@@ -41,7 +42,8 @@ const router: FastifyPluginCallback = async (server, _, done) => {
   })
 
   server.post("/register", async(req : FastifyRequest <{Body: {username: string, email: string, password: string, confirmPassword: string}}>, res) => {
-    console.log(req.body)
+    await client.connect();
+    const db = drizzle(client);
     const user = await db.select().from(users).where(eq(users.email, req.body.email))
       if (user.length > 0) {
         throw new ExtendedError(400, "This email is already used")
@@ -52,6 +54,7 @@ const router: FastifyPluginCallback = async (server, _, done) => {
         email: req.body.email,
         password: req.body.password
       }).returning()
+      client.end()
 
       return res.status(200).send({
         message: "User registered",
